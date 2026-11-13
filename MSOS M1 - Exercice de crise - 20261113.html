@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cellule de crise – CH de Montclair</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF2F6; --sheet:#FFFFFF; --ink:#16233A; --muted:#55627A; --rule:#C9D3DF;
+  --ballpoint:#1F3A93; --alarm:#C8102E; --plus:#1E7A3C; --minus:#B3261E; --amber:#9A5B00;
+  --bar-bg:#DDE4EC; --focus:#1F3A93; --shadow:0 1px 0 rgba(22,35,58,.08);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1724; --sheet:#172235; --ink:#E7EDF5; --muted:#A3B0C4; --rule:#2B3A52;
+    --ballpoint:#8FB0FF; --alarm:#FF6B7D; --plus:#6FD08C; --minus:#FF8A80; --amber:#F2B45A;
+    --bar-bg:#24324A; --focus:#8FB0FF; --shadow:none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1724; --sheet:#172235; --ink:#E7EDF5; --muted:#A3B0C4; --rule:#2B3A52;
+  --ballpoint:#8FB0FF; --alarm:#FF6B7D; --plus:#6FD08C; --minus:#FF8A80; --amber:#F2B45A;
+  --bar-bg:#24324A; --focus:#8FB0FF; --shadow:none; color-scheme: dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:17px;line-height:1.5;font-variant-numeric:tabular-nums}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 20px 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:18px}
+.brand{font-weight:800;font-size:1.05rem;letter-spacing:.01em}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:.85rem}
+.clock{font-weight:700;color:var(--alarm);font-size:1.05rem}
+.meta{color:var(--muted);font-size:.9rem}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0 .3em;font-weight:800}
+h2{font-size:1.3rem;margin:1.2em 0 .5em;font-weight:700}
+h3{font-size:1.05rem;margin:.8em 0 .3em}
+p{margin:.4em 0 .8em;max-width:75ch}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;box-shadow:var(--shadow)}
+.sheet + .sheet{margin-top:16px}
+.situation{border-left:6px solid var(--alarm)}
+.situation .when{font-weight:700;color:var(--alarm)}
+.variant{background:color-mix(in srgb,var(--alarm) 8%,transparent);border-radius:4px;padding:8px 12px;margin-top:8px}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+@media (max-width:600px){.roles{grid-template-columns:1fr}}
+.role{border:1px dashed var(--rule);border-radius:6px;padding:10px 12px;background:transparent;text-align:left;cursor:pointer;width:100%}
+.role > b{display:block}
+.role .hint{color:var(--muted);font-size:.9rem}
+.role[aria-expanded="true"]{border-style:solid;border-color:var(--ballpoint)}
+.role[aria-expanded="true"]{grid-column:1 / -1}
+.msg div:last-child{font-size:.97rem}
+.role .secret{margin-top:6px}
+.options{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;background:var(--sheet);border:2px solid var(--rule);border-radius:6px;padding:12px 14px;cursor:pointer}
+.opt:hover{border-color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--ballpoint);background:color-mix(in srgb,var(--ballpoint) 7%,var(--sheet))}
+.opt .letter{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-weight:800;color:var(--ballpoint)}
+.opt .lbl{font-weight:700}
+.opt .det{color:var(--muted);font-size:.95rem}
+label.field{display:block;font-weight:600;margin:14px 0 6px}
+textarea,input[type=text],input[type=number]{width:100%;border:1px solid var(--rule);border-radius:6px;padding:10px 12px;background:var(--paper)}
+textarea{min-height:84px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--sheet);border-radius:6px;padding:10px 16px;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:6px 10px;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--minus);font-weight:600}
+.gauges{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.gauge{margin:10px 0 14px}
+.gauge .name{display:flex;justify-content:space-between;font-weight:700;font-size:.95rem}
+.gauge .def{color:var(--muted);font-size:.8rem;line-height:1.3}
+.cells{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:5px}
+.cell{height:12px;border-radius:2px;background:var(--bar-bg)}
+.cell.on{background:var(--ink)}
+.gauge.low .cell.on{background:var(--alarm)}
+.gauge .name .v{font-weight:800}
+.delta{font-weight:800;margin-left:6px}
+.delta.p{color:var(--plus)} .delta.m{color:var(--minus)}
+.stamp{display:inline-block;border:3px solid var(--ballpoint);color:var(--ballpoint);padding:4px 10px;border-radius:4px;font-weight:800;transform:rotate(-2deg)}
+@media (prefers-reduced-motion:no-preference){.stamp.fresh{animation:stamp .35s ease-out}}
+@keyframes stamp{from{transform:rotate(-2deg) scale(1.6);opacity:0}to{transform:rotate(-2deg) scale(1);opacity:1}}
+.effects{list-style:none;padding:0;margin:8px 0}
+.effects li{padding:4px 0;border-bottom:1px solid var(--rule)}
+.because{color:var(--ballpoint)}
+.avis{border-left:4px solid var(--ballpoint);padding:6px 12px;margin:10px 0;font-style:italic}
+.jokers{display:flex;gap:8px;flex-wrap:wrap}
+.notice{background:color-mix(in srgb,var(--ballpoint) 9%,transparent);border-radius:6px;padding:10px 12px;margin:10px 0}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--rule);padding:7px 8px;text-align:left;vertical-align:top;font-size:.95rem}
+th{font-weight:700}
+.scroll{overflow-x:auto}
+.big{font-size:clamp(4rem,14vw,10rem);font-weight:800;line-height:1;text-align:center;letter-spacing:.02em}
+.big.late{color:var(--alarm)}
+.code{font-weight:800;font-size:1.4rem;letter-spacing:.06em}
+.dist{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dist div{border:1px solid var(--rule);border-radius:6px;padding:8px}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+.hidden{display:none!important}
+.tr{font-weight:800;font-size:1rem}
+.tr.p{color:var(--plus)} .tr.m{color:var(--minus)} .tr.z{color:var(--muted)}
+.trend{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 2px}
+.tcell{display:inline-flex;flex-direction:column;align-items:center;min-width:28px;border:1px solid var(--rule);border-radius:4px;padding:2px 4px}
+.tcell small{font-size:.7rem;color:var(--muted)}
+.tcell.last{border-color:var(--ballpoint);border-width:2px}
+.msgs{margin-top:6px}
+.msg{border-left:3px solid var(--rule);padding:4px 10px;margin:8px 0}
+.msgh{font-size:.85rem;color:var(--muted)}
+.mission{border-top:1px solid var(--rule);padding-top:6px;margin-top:10px}
+.steps li{margin:.35em 0;max-width:75ch}
+.chrono{color:var(--muted);font-size:.9rem;margin-left:8px}
+.chrono.late{color:var(--alarm);font-weight:700}
+@media print{.noprint{display:none!important} body{background:#fff;color:#000} .sheet{border:none;box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   Scénario – CH de Montclair. Barème validé (version 3).
+   Jauges : soins, secu, confiance, conformite, si, equipes
+   ============================================================ */
+const GAUGES = [
+  {k:"soins", n:"Continuité des soins", d:"Accueillir et soigner : services ouverts, délais, activité."},
+  {k:"secu", n:"Sécurité des patients", d:"Le risque d'erreur ou de préjudice pour un patient pris en charge."},
+  {k:"confiance", n:"Confiance", d:"Ce que pensent l'ARS, le public et le personnel."},
+  {k:"conformite", n:"Conformité", d:"Les obligations : déclaration d'incident, CNIL, plainte."},
+  {k:"si", n:"Système d'information", d:"Maîtriser l'attaque et retrouver un système sain (cybersécurité)."},
+  {k:"equipes", n:"Endurance des équipes", d:"La capacité du personnel à tenir dans la durée : charge, fatigue, moral."}
+];
+const START = {soins:6, secu:6, confiance:6, conformite:5, si:3, equipes:6};
+const CODE_BILAN = "BILAN";
+const ROLES = ["Direction", "Informatique et sécurité", "Soins", "Communication et juridique"];
+
+const MISSIONS = [
+  {r:"Direction", m:"Vous pilotez la cellule de crise et vous tranchez quand le groupe ne s'accorde pas. Vous êtes l'interlocuteur de l'ARS et du conseil de surveillance. Le directeur est l'autorité responsable de la sécurité des systèmes d'information : la décision finale vous revient, et vous devrez la justifier.",
+   p:"Distribuer la parole, faire décider dans le temps, écrire chaque décision dans la main courante."},
+  {r:"Informatique et sécurité", m:"Vous représentez le service informatique et le RSSI. Votre priorité : contenir l'attaque, protéger les sauvegardes, puis restaurer. Vous êtes l'interlocuteur du CERT Santé et des prestataires.",
+   p:"Dire clairement ce que vous savez, ce que vous ne savez pas, et combien de temps prendra chaque option."},
+  {r:"Soins", m:"Vous représentez la direction des soins et les chefs de service. Votre priorité : que les patients présents et à venir soient pris en charge sans risque. Vous organisez le mode dégradé et vous êtes l'interlocuteur du SAMU et du CHU voisin.",
+   p:"Rappeler à chaque décision ce qu'elle change, concrètement, au lit du patient."},
+  {r:"Communication et juridique", m:"Vous portez la parole de l'hôpital vers le personnel, la presse, les patients et les familles. Vous veillez aussi aux obligations : déclaration d'incident, plainte, notification à la CNIL, avec le DPO.",
+   p:"Vérifier à chaque tour qu'aucune obligation n'est oubliée, et qu'aucune phrase publique ne devra être démentie."}
+];
+
+const TOURS = [
+ { t:"Couper ou contenir", when:"Samedi, 6 h 40",
+   sit:() => ["Depuis 6 h 15, les infirmières de nuit ne peuvent plus ouvrir le dossier patient. Sur tous les postes, un message dans une langue étrangère réclame 3 millions d'euros et affiche un compte à rebours de 72 heures.",
+              "L'astreinte informatique a repéré une connexion inhabituelle cette nuit à 3 h 12, par l'accès à distance (VPN) du prestataire de maintenance. L'astreinte de direction vous a convoqués en salle de crise. Première décision : que fait-on du réseau ?"],
+   variants:() => [],
+   roles:[
+    {s:"Le prestataire promet un diagnostic à 10 h et demande de ne rien toucher d'ici là. Le directeur général du GHT est injoignable avant 9 h.", d:"Ne pas arrêter seul tout l'hôpital sans avoir mesuré ce que cela coûte aux soins."},
+    {s:"Le laboratoire et l'imagerie tournent encore, mais sur les mêmes serveurs que le dossier patient. Les sauvegardes de la nuit sont sur le réseau.", d:"Chaque minute compte : tant que l'attaquant est dans le réseau, il peut atteindre les sauvegardes."},
+    {s:"La procédure papier des urgences existe, mais elle n'a pas été exercée depuis deux ans. Trente-huit patients sont aux urgences.", d:"Ce qui marche encore, le laboratoire surtout, doit continuer de marcher le plus longtemps possible."},
+    {s:"Des soignants postent des photos des écrans sur les réseaux sociaux. Un journaliste local en a déjà partagé une.", d:"Quoi que vous décidiez, le personnel doit recevoir une consigne dans l'heure."}],
+   hint:"Dans le doute sur la propagation, isoler coûte moins cher que restaurer. Mais isoler n'est pas éteindre : l'enquête aura besoin des machines allumées.",
+   opts:[
+    { l:"Déconnecter tout l'hôpital du réseau et d'internet, sans éteindre les machines", det:"Le laboratoire, l'imagerie et la messagerie sont coupés aussi.",
+      fx:()=>({e:{soins:-2, equipes:-1, si:+2}, why:[]}),
+      cq:"À 7 h 05, tout est coupé. La propagation s'arrête et les sauvegardes sont à l'abri. Mais le laboratoire et l'imagerie sont à l'arrêt : les résultats de biologie partent par coursier, et tout passe au papier.",
+      avis:["CERT Santé","C'est la mesure la plus sûre pour le système : isoler d'abord, comprendre ensuite, en gardant les machines allumées pour l'enquête. Le prix se paie tout de suite, du côté des soins."] },
+    { l:"Isoler les serveurs touchés et couper le VPN du prestataire", det:"Le reste de l'hôpital continue de tourner.",
+      fx:()=>({e:{soins:-1, si:-1}, why:[]}),
+      cq:"Le VPN est coupé à 7 h 10 et les serveurs touchés sont isolés. Le laboratoire tourne encore. Mais à 8 h 50, le serveur d'imagerie est chiffré à son tour : l'attaquant avait un autre point d'appui.",
+      avis:["CERT Santé","Une réponse proportionnée, à condition de savoir où est l'attaquant. Ici, c'était un pari."] },
+    { l:"Éteindre immédiatement tous les serveurs et les postes", det:"Le chiffrement s'arrête net ; on rallumera après.",
+      fx:()=>({e:{soins:-2, equipes:-1, si:+1}, why:[]}),
+      cq:"À 7 h, tout est éteint et le chiffrement s'arrête. Mais en éteignant, on a effacé les traces en mémoire qui auraient montré par où l'attaquant est entré. Le laboratoire et l'imagerie sont à l'arrêt.",
+      avis:["CERT Santé","Éteindre arrête le chiffrement, mais efface les traces dont l'enquête a besoin. La recommandation est de déconnecter du réseau sans éteindre."] }
+   ]},
+ { t:"Les urgences", when:"Samedi, 10 h",
+   sit:() => ["L'ARS vous appelle : elle doit savoir avant 11 h si vos urgences restent ouvertes, et organiser avec le SAMU l'orientation des ambulances. Aucun retour du système n'est envisageable avant 48 heures.",
+              "Samedi est un jour chargé : les urgences reçoivent en moyenne une ambulance toutes les vingt minutes."],
+   variants:(c) => [ c[0]==="A" ? "Sans laboratoire informatisé, chaque résultat de biologie met 40 minutes à arriver."
+                   : c[0]==="B" ? "L'imagerie est tombée à 8 h 50 ; le laboratoire tient."
+                   : "Tout est éteint : chaque résultat de biologie met 40 minutes à arriver, par coursier." ],
+   roles:[
+    {s:"Le CHU voisin est déjà à 120 % de ses capacités aux urgences. L'ARS attend votre réponse avant 11 h.", d:"Une décision qui tienne 48 heures, pas seulement la matinée."},
+    {s:"Aucune date de retour du système avant 48 heures : vous ne pouvez rien promettre aux soins.", d:"Ne pas faire reposer les urgences sur un système dont vous ne garantissez rien."},
+    {s:"Six patients sont en réanimation, deux en dialyse. Sans historique, chaque prescription se fait sans connaître les traitements en cours.", d:"La sécurité des patients déjà présents passe avant l'accueil de nouveaux."},
+    {s:"Le rappel des agents en repos est possible, mais un tiers est en congés. Les syndicats préviennent qu'ils suivront les heures de près.", d:"Ne pas épuiser les équipes dès le premier jour d'une crise qui va durer."}],
+   hint:"Un mode dégradé tient d'autant mieux que la procédure papier a été exercée. Ce n'était pas le cas ici.",
+   opts:[
+    { l:"Déclencher le plan blanc et délester", det:"Le SAMU oriente les ambulances vers le CHU.",
+      fx:(c)=>({e:{secu:c[0]!=="B"?+2:+1, soins:-1, equipes:+1, confiance:-1},
+                why:c[0]!=="B"?["Parce que le laboratoire est arrêté, envoyer les cas graves ailleurs protège encore davantage vos patients."]:[]}),
+      cq:"Le plan blanc est déclenché à 10 h 40. Les ambulances partent vers le CHU ; vos urgences ne gardent que les patients qui se présentent d'eux-mêmes. Le maire appelle : la population s'inquiète de voir ses urgences « fermées ».",
+      avis:["CHU voisin","Nous prenons vos patients, mais nous ne tiendrons pas au-delà de 48 heures."] },
+    { l:"Maintenir les urgences ouvertes en mode dégradé papier", det:"Le personnel en repos est rappelé.",
+      fx:(c)=>({e:{soins:+1, secu:c[0]!=="B"?-2:-1, equipes:-2},
+                why:c[0]!=="B"?["Sans laboratoire, garder les urgences ouvertes expose encore davantage vos patients."]:[]}),
+      cq:"Les urgences restent ouvertes. Vingt agents en repos sont rappelés ; la procédure papier, jamais exercée, se rode dans la douleur.",
+      avis:["Chef de service des urgences","On tient, mais chaque prescription sans historique est un risque."] },
+    { l:"Rester ouvert en déprogrammant pour redéployer", det:"La chirurgie programmée et les consultations sont suspendues ; leurs soignants renforcent les urgences.",
+      fx:(c)=>({e:{soins:-1, secu:c[0]!=="B"?-2:-1},
+                why:c[0]!=="B"?["Sans laboratoire, garder les urgences ouvertes expose encore davantage vos patients."]:[]}),
+      cq:"Les opérations de lundi et mardi sont reportées, les consultations annulées. Les infirmières de bloc et de consultation renforcent les urgences : personne n'a été rappelé de repos.",
+      avis:["Chef de service de chirurgie","Mes patients attendaient leur opération depuis des mois. On les soigne quand, eux ?"] }
+   ]},
+ { t:"Parler ou se taire", when:"Samedi, 12 h 30",
+   sit:() => ["Une journaliste de France 3 Occitanie vous appelle : des soignants évoquent une cyberattaque sur les réseaux sociaux, et elle a les photos des écrans. Elle publie dans 30 minutes, avec ou sans votre réponse.",
+              "À cette heure, l'ARS n'a été prévenue que par téléphone : aucune déclaration écrite n'a été faite."],
+   variants:(c) => c[1]==="A" ? ["Elle sait déjà que les ambulances sont détournées vers le CHU."] : [],
+   roles:[
+    {s:"La déclaration d'incident n'est pas faite ; l'ARS a seulement été prévenue par téléphone.", d:"Ne rien dire publiquement qui vous engage avant d'en savoir plus."},
+    {s:"Le vol de données n'est ni confirmé ni exclu. Le CERT Santé peut vous appuyer dès que l'incident est déclaré.", d:"Déclarer tout de suite : sans déclaration, pas d'appui."},
+    {s:"Les familles appellent le standard ; les soignants sont interpellés dans les couloirs.", d:"Rassurer patients et familles sur la continuité des soins."},
+    {s:"Les rumeurs parlent de « dossiers volés ». La journaliste a les photos.", d:"Donner votre version avant que d'autres ne la donnent à votre place."}],
+   hint:"La déclaration à l'ARS et au CERT Santé est une obligation ; le contenu du communiqué, lui, est un choix. Ne confondez pas les deux.",
+   opts:[
+    { l:"Déclarer l'incident, porter plainte, puis publier un communiqué", det:"Portail des signalements, ARS, CERT Santé. Communiqué : « cyberattaque en cours, prise en charge des patients assurée, investigation en cours ».",
+      fx:(c)=>({e:{conformite:+2, confiance:c[1]==="A"?+1:+2, si:+1, equipes:-1},
+                why:c[1]==="A"?["Avec des ambulances détournées, « prise en charge assurée » sonne faux : la confiance progresse moins."]:[]}),
+      cq:"L'incident est déclaré à 12 h 50, la plainte déposée à 15 h. L'article reprend votre communiqué. Le CERT Santé vous rappelle dans l'heure.",
+      avis:["ARS","Merci. Une cellule régionale est activée, avec un point de situation toutes les 4 heures."] },
+    { l:"Déclarer et porter plainte, mais ne rien dire à la presse", det:"Comme le conseille l'assureur : attendre que le CERT Santé ait qualifié l'attaque. Consigne au personnel : ne rien publier.",
+      fx:(c)=>({e:{conformite:+2, si:+1, confiance:c[1]==="A"?-2:-1},
+                why:c[1]==="A"?["Les ambulances détournées se voient de la rue : l'article est plus dur avec vous."]:[]}),
+      cq:"L'incident est déclaré et le CERT Santé vous appuie. L'article sort à 13 h, sans votre version.",
+      avis:["Journaliste","Nous avons publié avec ce que nous avions. L'hôpital n'a pas souhaité s'exprimer."] },
+    { l:"Rassurer la presse, et déclarer par écrit lundi avec un diagnostic complet", det:"L'ARS a été prévenue par téléphone. À la journaliste : « incident informatique en cours d'analyse, aucune donnée de patient compromise à ce stade ».",
+      fx:()=>({e:{conformite:-3, confiance:+1}, why:[]}),
+      cq:"L'article reprend votre phrase : « aucune donnée de patient compromise ». Pour l'instant, cela rassure. La déclaration écrite attendra lundi.",
+      avis:["CERT Santé","Un incident grave se déclare sans délai, par écrit. Et « aucune donnée compromise », personne ne pouvait encore l'affirmer."] }
+   ]},
+ { t:"Quoi restaurer d'abord", when:"Dimanche, 9 h",
+   sit:() => ["Le CERT Santé et l'équipe informatique ont trouvé une partie des sauvegardes intacte. Mais l'équipe ne peut restaurer qu'un système à la fois, et chacun prend environ 48 heures.",
+              "Il faut choisir ce qui reviendra en premier : le reste attendra au moins jusqu'à mardi."],
+   variants:(c) => [ ...(c[0]==="C" ? ["Faute de traces, personne ne sait par où l'attaquant est entré : chaque serveur doit être vérifié avant d'être restauré."] : []),
+                     ...(c[1]==="A" ? ["Le CHU demande que vous repreniez vos patients lundi."] : []) ],
+   roles:[
+    {s:"La paie part mardi, et le planning des gardes est dans le même système.", d:"Tenir le personnel, sans qui aucune crise ne se traverse."},
+    {s:"Le laboratoire et la pharmacie sont les plus rapides à remettre en service ; le dossier patient est le plus long.", d:"Restaurer d'abord ce qui sera prêt le plus vite."},
+    {s:"Les transmissions papier s'accumulent. Cette nuit, une erreur de dose a été évitée de justesse.", d:"Le dossier patient avant tout."},
+    {s:"Les syndicats demandent par écrit si les salaires seront versés.", d:"Une réponse claire au personnel aujourd'hui, quelle qu'elle soit."}],
+   hint:"Il n'y a pas de bon ordre universel. Il y a un ordre que vous savez justifier devant l'ARS et devant vos équipes.",
+   opts:[
+    { l:"Restaurer d'abord le dossier patient", det:"L'historique des patients revient en premier.",
+      fx:(c)=>({e:{si:c[0]==="C"?+1:+2, soins:+2, secu:+1, equipes:-1},
+                why:c[0]==="C"?["Sans traces de l'intrusion, chaque serveur doit être vérifié avant la restauration : le système progresse moins vite."]:[]}),
+      cq:"Mardi soir, le dossier patient revient. Les syndicats, eux, n'ont aucune réponse sur la paie.",
+      avis:["Président de la commission médicale","Le dossier patient est le cœur du soin : le reste attendra."] },
+    { l:"Restaurer d'abord le laboratoire et la pharmacie", det:"Résultats et circuit du médicament reviennent en premier.",
+      fx:(c)=>{const w=[]; if(c[0]==="C") w.push("Sans traces de l'intrusion, chaque serveur doit être vérifié avant la restauration : le système progresse moins vite."); if(c[1]==="A") w.push("Sans dossier patient, vous ne pouvez pas reprendre les patients confiés au CHU.");
+               return {e:{si:c[0]==="C"?+1:+2, secu:+2, soins:c[1]==="A"?0:+1, equipes:-1}, why:w};},
+      cq:"Lundi soir, les résultats et le circuit du médicament sont de retour. Le dossier patient reste sur papier.",
+      avis:["Pharmacien","Résultats et médicaments : c'est là qu'une erreur coûte le plus vite."] },
+    { l:"Restaurer d'abord la paie et le planning", det:"Salaires et planning des gardes reviennent en premier.",
+      fx:(c)=>{const w=[]; if(c[0]==="C") w.push("Sans traces de l'intrusion, chaque serveur doit être vérifié avant la restauration : le système progresse moins vite."); if(c[1]==="A") w.push("Sans dossier patient, vous ne pouvez pas reprendre les patients confiés au CHU.");
+               const e={si:c[0]==="C"?+1:+2, equipes:+2, secu:-1}; if(c[1]==="A") e.soins=-1; return {e, why:w};},
+      cq:"Les salaires partent mardi et le planning des gardes est rétabli. Les soignants travaillent une journée de plus sans dossier ni laboratoire.",
+      avis:["Directrice des ressources humaines","La paie n'est pas un caprice : sans salaire ni planning, les équipes ne tiennent pas une crise longue. Mais aucun patient n'en profite aujourd'hui."] }
+   ]},
+ { t:"La fuite", when:"Lundi, 7 h",
+   sit:() => ["Le groupe criminel revendique l'attaque sur son site et publie un premier lot : des plannings du personnel et une dizaine de comptes rendus. Il menace de publier des dossiers de psychiatrie sous 48 heures.",
+              "Le délai de 72 heures pour notifier la CNIL expire mardi à 6 h 40. Le conseil de surveillance demande d'« évaluer sérieusement » la rançon de 3 millions d'euros."],
+   variants:(c) => c[2]==="C" ? ["La revendication contredit votre phrase de samedi, « aucune donnée de patient compromise » : la presse parle de mensonge."] : [],
+   roles:[
+    {s:"L'assureur propose un « négociateur » spécialisé. Le conseil de surveillance veut qu'on « évalue » la rançon.", d:"Ne fermer aucune porte avant d'avoir compris ce que l'attaquant détient."},
+    {s:"L'analyse des fichiers volés prendra au moins une semaine.", d:"Ne pas annoncer aux patients ce que vous ne savez pas encore."},
+    {s:"Les patients de psychiatrie sont les plus exposés, et certains sont fragiles.", d:"Prévenir ces patients avant qu'ils l'apprennent par la presse."},
+    {s:"La CNIL doit être notifiée sous 72 heures, quitte à compléter ensuite. Si le risque est élevé, les personnes doivent être informées sans délai excessif.", d:"Tenir le délai de la CNIL quoi qu'il arrive."}],
+   hint:"La rançon n'est pas la question de ce tour. La question est : que dites-vous aux patients, et quand ?",
+   opts:[
+    { l:"Notifier la CNIL aujourd'hui et informer tout de suite les patients exposés", det:"Avant d'avoir confirmé ce qui a été volé.",
+      fx:(c)=>({e:{conformite:+2, confiance:c[2]==="C"?-1:+1, equipes:-2},
+                why:c[2]==="C"?["Après votre phrase rassurante de samedi, la vérité vous rattrape, mais vous l'assumez : la confiance baisse au lieu de remonter."]:[]}),
+      cq:"La CNIL est notifiée à 11 h. Une cellule d'écoute reçoit 300 appels dans la journée.",
+      avis:["DPO","Notifier tôt, quitte à compléter ensuite : le délai de 72 heures le permet."] },
+    { l:"Notifier la CNIL dans le délai, informer les patients après analyse", det:"N'informer que les patients réellement concernés.",
+      fx:(c)=>({e:{conformite:+1, confiance:c[2]==="C"?-3:-1},
+                why:c[2]==="C"?["Votre phrase de samedi est démentie, et vous vous taisez encore : la confiance s'effondre."]:[]}),
+      cq:"La CNIL est notifiée mardi à 5 h. Jeudi, un patient découvre son compte rendu dans la presse avant de recevoir votre courrier.",
+      avis:["DPO","Le délai est tenu. Mais quand le risque est élevé, les personnes doivent être informées sans délai excessif."] },
+    { l:"Accepter le négociateur pour savoir ce que l'attaquant détient", det:"Sans payer. La CNIL est notifiée dans le délai, et seuls les patients réellement concernés seront informés.",
+      fx:(c)=>({e:{conformite:+1, confiance:c[2]==="C"?-2:0, equipes:-1},
+                why:c[2]==="C"?["Votre phrase de samedi est démentie : la confiance baisse au lieu de se maintenir."]:[]}),
+      cq:"La CNIL est notifiée mardi à 5 h. Le négociateur obtient la liste précise des fichiers : vous savez enfin qui prévenir. Mais l'attaquant, sentant un intérêt, publie un second lot mardi, et la négociation mobilise la cellule pendant deux jours.",
+      avis:["CERT Santé","Ne jamais payer reste la doctrine constante. Tout contact avec l'attaquant doit être encadré par les autorités et les forces de l'ordre."] }
+   ]},
+ { t:"Tenir la deuxième semaine", when:"Mercredi",
+   sit:() => ["La cellule de crise siège depuis quatre jours. Le dossier patient revient progressivement, service par service, mais la vérification complète du système prendra encore une semaine.",
+              "Les cadres de la cellule sont épuisés, les services réclament leurs cadres, et l'ARS demande un calendrier de sortie de crise pour vendredi. Comment tenez-vous la deuxième semaine ?"],
+   variants:(c) => [ ...(c[1]==="B" ? ["Deux soignants rappelés samedi sont en arrêt maladie."] : []),
+                     ...(c[3]==="A" ? ["Les syndicats déposent un préavis : la paie n'est pas partie."] : []),
+                     ...(c[1]==="A" ? ["Le CHU signale qu'il est saturé."] : []) ],
+   roles:[
+    {s:"Les membres de la cellule dorment quatre heures par nuit. L'ARS veut un calendrier pour vendredi.", d:"Montrer à l'ARS que la crise reste sous contrôle."},
+    {s:"La vérification complète du système prendra encore une semaine. Tant qu'elle n'est pas finie, on ne peut pas exclure un accès dormant.", d:"Ne relâcher aucune vigilance avant la fin de la vérification."},
+    {s:"Deux cadres de santé sont à bout, et leurs services tournent sans eux depuis samedi.", d:"Rendre leurs cadres aux services."},
+    {s:"Le personnel demande des nouvelles et un mot de la direction.", d:"Une organisation lisible pour tout l'hôpital, annoncée aujourd'hui."}],
+   hint:"On ne sort pas d'une crise cyber quand le logiciel revient, mais quand on a vérifié que l'attaquant est parti.",
+   opts:[
+    { l:"Passer en relèves", det:"Une seconde équipe de cadres prend le relais toutes les douze heures.",
+      fx:()=>({e:{equipes:+2, si:-1}, why:[]}),
+      cq:"La cellule se repose enfin. Mais jeudi, la seconde équipe, qui n'a pas vécu le samedi, rouvre l'accès à distance du prestataire pour une maintenance « urgente ». L'équipe informatique le referme dans l'heure.",
+      avis:["ARS","Les relèves sont indispensables dans une crise longue, à condition d'une main courante que chaque équipe lit en arrivant."] },
+    { l:"Réduire la cellule à un noyau", det:"La direction et l'informatique continuent ; les cadres de soins retournent dans leurs services.",
+      fx:(c)=>({e:{equipes:+1, soins:+1, si:c[0]==="C"?-2:0},
+                why:c[0]==="C"?["Sans les traces effacées samedi, personne ne sait par où l'attaquant était entré : avec une vigilance réduite, il revient vendredi."]:[]}),
+      cq:"Les services retrouvent leurs cadres, et l'activité repart. Mais les soins ne participent plus aux décisions de la cellule, et la vigilance baisse.",
+      avis:["Direction des soins","Nos services respirent. Mais qui, dans la cellule, dira désormais ce qu'une décision change au lit du patient ?"] },
+    { l:"Garder la même cellule complète une semaine de plus", det:"Les mêmes cadres restent mobilisés jusqu'à la fin de la vérification ; leurs services continuent sans eux.",
+      fx:(c)=>({e:{si:+1, confiance:+1, soins:-1, equipes:c[1]==="B"?-1:0},
+                why:c[1]==="B"?["Les agents rappelés samedi tiennent une semaine de plus : l'endurance des équipes baisse."]:[]}),
+      cq:"La vérification va au bout : deux postes encore infectés sont trouvés et nettoyés, et l'ARS est rassurée. Mais dans les services privés de leurs cadres, les plannings du week-end sont bouclés à la hâte, et deux blocs opératoires restent fermés faute d'organisation.",
+      avis:["CERT Santé","Aller au bout de la vérification est la bonne exigence technique. Reste à savoir combien de temps les mêmes personnes peuvent décider juste, et ce que leurs services perdent pendant ce temps."] }
+   ]}
+];
+
+/* Cartes de rôle : un paragraphe de situation, deux ou trois messages reçus, et la position défendue.
+   Ordre des rôles : Direction, Informatique et sécurité, Soins, Communication et juridique. */
+const CARDS = [
+ // ---------------- Tour 1 – Samedi, 6 h 40
+ [
+  {p:"L'administrateur de garde vous a réveillé à 6 h 41 : plus aucun poste n'ouvre le dossier patient, et un message en anglais s'affiche sur tous les écrans. En arrivant, vous apprenez que le directeur général du groupement hospitalier de territoire est dans le train, injoignable avant 9 h : pour les prochaines heures, c'est vous qui décidez. Vous savez qu'un arrêt complet de l'informatique coûterait cher aux soins un samedi matin, et que le président du conseil de surveillance attend des nouvelles avant midi.",
+   m:[["6 h 48","Infogest, prestataire de maintenance","Surtout, ne touchez à rien. Nous nous reconnectons par notre accès habituel pour diagnostiquer, et nous vous faisons un point à 10 h."],
+      ["6 h 55","Le président du conseil de surveillance","On me parle d'un souci informatique. Rien de grave, j'espère ? Évitons d'affoler tout le monde."]],
+   d:"Ne pas arrêter seul tout l'hôpital sans avoir mesuré ce que cela coûte aux soins."},
+  {p:"Depuis 5 h 52, la console de l'antivirus aligne les alertes « chiffrement de fichiers » : d'abord le serveur du dossier patient, puis deux autres. Le compteur dépasse 200 et monte encore. Le journal des connexions montre une session ouverte à 3 h 12 avec le compte de maintenance d'Infogest, pendant 2 h 40, alors qu'Infogest n'intervient jamais la nuit. Le laboratoire et l'imagerie tournent sur les mêmes serveurs virtuels que le dossier patient. Votre collègue de nuit vous rappelle que les sauvegardes sont sur un serveur relié au réseau, pas hors ligne.",
+   m:[["6 h 36","Alerte de la baie de sauvegarde","Espace disque inférieur à 15 %. (Cette alerte sonne chaque semaine depuis un mois.)"],
+      ["6 h 44","Un interne de garde","Le plus simple, c'est d'éteindre tous les serveurs : plus de courant, plus de virus."]],
+   d:"Chaque minute compte : tant que l'attaquant est dans le réseau, il peut atteindre les sauvegardes."},
+  {p:"Vous arrivez aux urgences à 6 h 20. Trente-huit patients sont présents, dont six en attente d'avis, et les deux box de réanimation sont occupés. Le classeur rouge de la procédure « panne informatique » est à l'accueil, mais la cadre de nuit vous avoue que la moitié de l'équipe ne l'a jamais ouvert : le dernier exercice date d'il y a deux ans. Pour l'instant, une chose vous rassure : le laboratoire rend encore ses résultats à l'écran. Sans lui, chaque résultat partirait par coursier, et il faudrait compter 40 minutes.",
+   m:[["6 h 31","Le biologiste de garde","Ne vous inquiétez pas pour nous : nos serveurs sont à part, nous n'avons jamais été touchés par les pannes du dossier patient."],
+      ["6 h 45","Le chef des urgences","Redémarrez les postes un par un, on verra vite lesquels marchent."]],
+   d:"Ce qui marche encore, le laboratoire surtout, doit continuer de marcher le plus longtemps possible."},
+  {p:"Depuis 6 h 47, une photo de l'écran de rançon, publiée par une aide-soignante, circule sur les réseaux sociaux : plusieurs centaines de partages. Un journaliste local l'a reprise avec une question : « Cyberattaque à l'hôpital de Montclair ? » Le standard a déjà reçu trois appels de familles inquiètes et ne sait pas quoi répondre. Pendant ce temps, l'équipe de nuit, qui va transmettre à l'équipe de jour dans une heure, n'a reçu aucune consigne.",
+   m:[["6 h 58","Rappel automatique","Le bulletin interne de décembre doit être bouclé lundi."],
+      ["7 h 00","La juriste de l'hôpital","Ne prononcez pas le mot « cyberattaque » tant que ce n'est pas confirmé : cela peut engager l'hôpital."]],
+   d:"Quoi que vous décidiez, le personnel doit recevoir une consigne dans l'heure."}
+ ],
+ // ---------------- Tour 2 – Samedi, 10 h
+ [
+  {p:"Le directeur général du GHT a rappelé à 9 h 05 : « Fais ce qui te semble juste, je te couvre. » L'ARS veut savoir avant 11 h si vos urgences restent ouvertes, pour organiser avec le SAMU l'orientation des ambulances. Le directeur du CHU voisin vous a joint : ses urgences sont à 120 % de leurs capacités, et il peut absorber vos patients « quelques heures, pas plusieurs jours ». Fermer vos urgences aux ambulances se verrait dans toute la ville.",
+   m:[["9 h 41","Le maire","Je compte sur vous pour ne pas fermer les urgences. La population ne comprendrait pas."]],
+   d:"Une décision qui tienne 48 heures, pas seulement la matinée."},
+  {p:"Votre estimation est sans appel : aucun retour du dossier patient avant 48 heures, dans le meilleur des cas. Les téléphones fixes fonctionnent, mais la messagerie interne est indisponible. Le CERT Santé n'a pas encore été saisi : il ne pourra vous appuyer qu'une fois l'incident déclaré. Le stagiaire a retrouvé un vieux poste hors réseau avec un tableau des traitements des patients ; il date de 2023.",
+   m:[["9 h 35","Courriel d'un éditeur concurrent","Solution de secours clé en main, opérationnelle en deux heures. Cliquez ici pour recevoir votre devis."],
+      ["9 h 52","Le stagiaire informatique","On pourrait imprimer le tableau de 2023 pour les urgences, c'est mieux que rien, non ?"]],
+   d:"Ne pas faire reposer les urgences sur un système dont vous ne garantissez rien."},
+  {p:"En réanimation, six patients, dont deux dont les traitements s'ajustent toutes les heures ; deux dialyses sont programmées à 14 h. Depuis 6 h, deux erreurs ont été évitées de justesse aux urgences : une allergie inconnue, un médicament donné deux fois. Sans historique, on prescrit à l'aveugle. Au bloc, onze interventions sont programmées lundi et mardi, dont trois pour des cancers : leurs infirmières pourraient renforcer les urgences si on les déprogrammait.",
+   m:[["9 h 45","Une interne","Au CHU, on m'a dit qu'ils ont l'habitude : ils prendront tout le monde, sans limite."]],
+   d:"La sécurité des patients déjà présents passe avant l'accueil de nouveaux."},
+  {p:"La direction des ressources humaines vous a donné ses chiffres : vingt agents en repos sont joignables pour un rappel, mais un tiers du personnel est en congés cette semaine. Un syndicat a prévenu qu'il suivrait de très près les heures de rappel et les repos non pris. Sur les réseaux sociaux, la photo de 6 h 47 dépasse 2 000 partages.",
+   m:[["9 h 26","Un commentaire très partagé","Les urgences de Montclair sont déjà fermées, allez directement au CHU."],
+      ["9 h 49","Le standard","Les familles demandent si les visites sont maintenues cet après-midi."]],
+   d:"Ne pas épuiser les équipes dès le premier jour d'une crise qui va durer."}
+ ],
+ // ---------------- Tour 3 – Samedi, 12 h 30
+ [
+  {p:"L'ARS, que vous aviez prévenue par téléphone ce matin, vous a rappelé à 12 h 05 : elle attend maintenant votre déclaration écrite sur le portail des signalements. L'assureur cyber, lui, vous conseille de ne rien communiquer publiquement avant que ses experts aient qualifié l'attaque. Le directeur général du GHT s'inquiète pour l'image : « Si on dit cyberattaque, on passe pour des amateurs. »",
+   m:[["12 h 15","Agenda","Jeudi, visite du sous-préfet pour l'inauguration du nouveau parking."],
+      ["12 h 20","Un élu municipal","Dites que c'est une panne, comme l'hôpital voisin l'an dernier. Personne n'a rien vérifié."]],
+   d:"Ne rien dire publiquement qui vous engage avant d'en savoir plus."},
+  {p:"L'analyse préliminaire vient de tomber : entre 3 h 30 et 5 h 40, un volume important de données est sorti du réseau vers l'extérieur. On ne sait pas encore quels fichiers. Infogest reconnaît que son compte de maintenance utilisait un mot de passe partagé entre plusieurs de ses clients. Le CERT Santé vous a confirmé qu'il interviendra dès réception de la déclaration d'incident.",
+   m:[["12 h 12","Un collègue, sur un forum professionnel","Ce groupe-là ne vole jamais de données. Il chiffre, c'est tout."]],
+   d:"Déclarer tout de suite : sans déclaration, pas d'appui."},
+  {p:"Le standard a reçu soixante appels de familles depuis 9 h. À la maternité, une patiente demande si son dossier « va se retrouver sur internet ». Dans les couloirs, les soignants sont interpellés : certains répondent qu'ils ne savent rien, d'autres inventent. Les équipes réclament un message simple à donner aux patients.",
+   m:[["12 h 22","Une cadre de santé","Surtout, ne dites pas « cyberattaque » : les patients vont partir se faire soigner ailleurs."]],
+   d:"Rassurer patients et familles sur la continuité des soins."},
+  {p:"La journaliste a rappelé : elle a les photos et le témoignage de deux soignants, et publie à 13 h, avec ou sans votre version. Sur les réseaux, les rumeurs parlent de « dossiers volés » et même de « rançon déjà payée ». La juriste de l'hôpital vous rappelle que déclarer l'incident aux autorités et parler à la presse sont deux choses différentes : la première ne se discute pas.",
+   m:[["12 h 24","Brouillon de communiqué, rédigé par un stagiaire","« Une panne informatique sans gravité perturbe temporairement l'activité. Aucune donnée n'est concernée. »"]],
+   d:"Donner votre version avant que d'autres ne la donnent à votre place."}
+ ],
+ // ---------------- Tour 4 – Dimanche, 9 h
+ [
+  {p:"La directrice des ressources humaines vous a rappelé l'échéance : le fichier de virement de la paie doit partir lundi à 18 h pour que les salaires soient versés mardi, et le planning des gardes est dans le même système. Le président du conseil de surveillance insiste : « On ne peut pas laisser 2 200 agents sans salaire. » L'ARS attend un point de situation à 11 h.",
+   m:[["8 h 52","La banque de l'hôpital","Nous pouvons verser un acompte identique au mois dernier, sans les heures de la crise. Il faudra régulariser ensuite."]],
+   d:"Tenir le personnel, sans qui aucune crise ne se traverse."},
+  {p:"L'inventaire est fait : des sauvegardes saines existent pour le dossier patient, le laboratoire, la pharmacie et la paie. Mais une seule restauration peut avancer à la fois, sinon le réseau sature. Vos estimations : environ 30 heures pour la paie, 36 heures pour le laboratoire et la pharmacie, 60 heures pour le dossier patient. Attention : restauré seul, le dossier patient n'affichera ni les résultats de biologie ni les prescriptions de la pharmacie, qui sont des logiciels distincts.",
+   m:[["8 h 30","L'éditeur du dossier patient","Notre technicien peut venir sur place à partir de mercredi. Mieux vaut ne rien commencer sans lui."]],
+   d:"Restaurer d'abord ce qui sera prêt le plus vite."},
+  {p:"Cette nuit, en cardiologie, une erreur de dose a été évitée de justesse : la transmission papier n'avait pas été recopiée. Dans chaque service, les classeurs s'accumulent, et plus personne ne sait lequel est à jour. Les biologistes signalent que, par coursier, deux résultats critiques sont arrivés en retard cette nuit. À la pharmacie, sans prescriptions informatisées, les doubles vérifications prennent deux fois plus de temps.",
+   m:[["8 h 40","Le chef de cardiologie","Avec le dossier patient, on aura tout : les résultats, les prescriptions, l'historique. Le reste suivra forcément."]],
+   d:"Le dossier patient avant tout."},
+  {p:"Les syndicats ont écrit : ils veulent savoir aujourd'hui si les salaires seront versés mardi. La juriste de l'hôpital vous rappelle qu'un retard de paie exposerait l'établissement à des pénalités et à des recours. Sur les réseaux, un compte anonyme affirme que « la direction a déjà payé la rançon ».",
+   m:[["8 h 18","Un hebdomadaire régional","Nous préparons un dossier « Les hôpitaux face aux pirates ». Seriez-vous disponible jeudi pour une interview ?"]],
+   d:"Une réponse claire au personnel aujourd'hui, quelle qu'elle soit."}
+ ],
+ // ---------------- Tour 5 – Lundi, 7 h
+ [
+  {p:"L'assureur vous propose un négociateur spécialisé, disponible dans l'heure : « Il ne s'agit pas de payer, mais de savoir ce que l'attaquant détient. » Le conseil de surveillance vous demande d'« évaluer sérieusement » la rançon de 3 millions d'euros : d'autres établissements ont payé. La gendarmerie rappelle que tout contact avec l'attaquant doit lui être signalé et se faire avec elle.",
+   m:[["7 h 00","Un ami, directeur d'une clinique","Nous avons payé l'an dernier. Les données ont été publiées quand même."]],
+   d:"Ne fermer aucune porte avant d'avoir compris ce que l'attaquant détient."},
+  {p:"Le site de revendication montre douze fichiers : des plannings du personnel et des comptes rendus. L'analyse complète de ce qui a été volé prendra au moins une semaine. Dans les 40 gigaoctets sortis samedi, il pourrait y avoir des dossiers de psychiatrie : rien n'est certain, mais rien ne l'exclut.",
+   m:[["6 h 52","Un forum spécialisé","Ce groupe supprime toujours les données quand on paie. C'est une question de réputation pour eux."]],
+   d:"Ne pas annoncer aux patients ce que vous ne savez pas encore."},
+  {p:"Le chef du service de psychiatrie vous alerte : plusieurs patients suivis sont fragiles, et apprendre par la presse que leur dossier circule pourrait les déstabiliser gravement. Deux patients ont déjà appelé après avoir vu le site de revendication. Une cellule d'écoute demanderait quatre personnes pendant au moins trois jours, dans des équipes déjà épuisées.",
+   m:[["7 h 02","Un médecin","Ne disons rien : la plupart des patients ne lisent pas ces sites."]],
+   d:"Prévenir ces patients avant qu'ils l'apprennent par la presse."},
+  {p:"Le DPO a fait le point : la CNIL doit être notifiée dans les 72 heures qui suivent la découverte de la violation, soit avant demain 6 h 40 ; la notification peut être complétée ensuite. Si le risque est élevé pour les personnes, elles doivent être informées sans délai excessif. La presse vous demande déjà si l'hôpital va payer.",
+   m:[["6 h 47","Un cabinet d'avocats","Nous proposons nos services pour le contentieux des données personnelles."],
+      ["7 h 03","Un collègue de la direction","La CNIL n'est à prévenir que si l'on est sûr qu'il y a eu vol. Attendons l'analyse."]],
+   d:"Tenir le délai de la CNIL quoi qu'il arrive."}
+ ],
+ // ---------------- Tour 6 – Mercredi
+ [
+  {p:"L'ARS attend votre calendrier de sortie de crise pour vendredi. Votre assistante vous fait remarquer que les membres de la cellule dorment quatre heures par nuit depuis samedi, et que deux d'entre eux repoussent leurs réunions de service depuis lundi. Le directeur d'un autre hôpital vous a raconté qu'il avait levé sa cellule au bout de trois jours, « et tout s'est bien passé ».",
+   m:[["8 h 40","Presse","Une interview « bilan » vendredi ?"]],
+   d:"Montrer à l'ARS que la crise reste sous contrôle."},
+  {p:"La vérification complète du système prendra encore une semaine ; deux postes n'ont pas encore été analysés. Tant qu'elle n'est pas finie, on ne peut pas exclure qu'un accès dormant subsiste. Infogest a redemandé ce matin à rouvrir son accès à distance « pour une mise à jour urgente » ; vous avez refusé hier, mais la demande est arrivée cette fois par le standard, à un autre interlocuteur.",
+   m:[["8 h 55","Un technicien","On pourrait tout réinstaller en un week-end, et on n'en parle plus."]],
+   d:"Ne relâcher aucune vigilance avant la fin de la vérification."},
+  {p:"Deux cadres de santé de la cellule sont à bout : l'une a pleuré en réunion hier. Leurs services tournent sans eux depuis samedi, et les plannings du week-end prochain ne sont pas faits. Le dossier patient revient service par service ; la maternité attend toujours.",
+   m:[["8 h 52","Un chef de service","La crise est finie : le logiciel remarche."]],
+   d:"Rendre leurs cadres aux services."},
+  {p:"Le personnel réclame des nouvelles et un mot de la direction ; une rumeur interne prétend que « l'attaquant est toujours là ». Les syndicats demandent un retour d'expérience avec les équipes. La juriste de l'hôpital vous rappelle que la main courante de la cellule pourra être demandée par la CNIL et l'ARS : elle doit être complète, et lisible par quelqu'un qui n'a pas vécu la crise.",
+   m:[["8 h 20","Une cadre de la cellule","Si on passe en relèves, qui expliquera aux nouveaux ce qu'on a décidé samedi ?"]],
+   d:"Une organisation lisible pour tout l'hôpital, annoncée aujourd'hui."}
+ ]
+];
+CARDS.forEach((tour,i)=>{ TOURS[i].roles = tour; });
+TOURS[3].sit = () => ["Le CERT Santé et l'équipe informatique ont trouvé des sauvegardes intactes. Mais une seule restauration peut avancer à la fois, et chacune prend entre 30 et 60 heures selon le système.",
+                     "Il faut choisir ce qui reviendra en premier : le reste attendra au moins jusqu'à mardi."];
+
+/* Pour l'écran animateur : ce qu'il faut faire émerger au débriefing */
+const DEBRIEF_KEYS = [
+ {cles:["Le compte de maintenance d'Infogest s'est connecté à 3 h 12 (Informatique).","Le chiffrement progresse et les sauvegardes sont sur le réseau (Informatique).","Le laboratoire est sur les mêmes serveurs que le dossier patient (Informatique)."],
+  contra:"Le biologiste affirme que ses serveurs sont « à part » (Soins) ; la carte Informatique dit le contraire.",
+  comb:"Infogest veut se reconnecter « par son accès habituel » (Direction) : c'est précisément l'accès utilisé à 3 h 12 (Informatique).",
+  faux:"« Éteindre tous les serveurs » (Informatique), « redémarrer les postes » (Soins), « ne prononcez pas le mot cyberattaque » (Communication)."},
+ {cles:["Le CHU ne peut absorber que quelques heures (Direction).","Deux erreurs évitées depuis 6 h : on prescrit à l'aveugle (Soins).","Un tiers du personnel est en congés, le rappel sera surveillé (Communication)."],
+  contra:"L'interne affirme que le CHU « prendra tout le monde, sans limite » (Soins) ; son directeur dit l'inverse (Direction).",
+  comb:"Les infirmières du bloc redéployables (Soins) et le tiers du personnel en congés (Communication) : c'est tout l'argument de l'option C.",
+  faux:"Le tableau des traitements de 2023 (Informatique), la « solution de secours en deux heures » d'un inconnu (Informatique)."},
+ {cles:["L'ARS attend une déclaration écrite (Direction).","Un volume important de données est sorti cette nuit (Informatique).","Déclarer et communiquer sont deux choses différentes (Communication)."],
+  contra:"Le brouillon de communiqué dit « aucune donnée n'est concernée » (Communication) ; l'analyse dit qu'un volume important est sorti (Informatique).",
+  comb:"La patiente qui demande si son dossier ira sur internet (Soins) et la fuite constatée (Informatique) : « aucune donnée compromise » est indéfendable.",
+  faux:"« Dites que c'est une panne » (Direction), « ce groupe ne vole jamais de données » (Informatique)."},
+ {cles:["La paie doit partir lundi 18 h (Direction).","Durées : paie 30 h, laboratoire et pharmacie 36 h, dossier patient 60 h, une restauration à la fois (Informatique).","Deux résultats critiques en retard cette nuit (Soins)."],
+  contra:"Le chef de cardiologie croit que le dossier patient ramènera « tout » (Soins) ; l'Informatique sait que biologie et pharmacie sont des logiciels distincts.",
+  comb:"L'acompte proposé par la banque (Direction) répond en partie à l'inquiétude des syndicats (Communication) : la paie est moins urgente qu'il n'y paraît.",
+  faux:"Attendre le technicien de l'éditeur mercredi (Informatique)."},
+ {cles:["La CNIL doit être notifiée avant demain 6 h 40, quitte à compléter (Communication).","L'analyse complète prendra une semaine (Informatique).","Des patients fragiles de psychiatrie, deux ont déjà appelé (Soins)."],
+  contra:"« Ce groupe supprime les données quand on paie » (Informatique, forum) contre « nous avons payé, elles ont été publiées » (Direction).",
+  comb:"Une analyse d'une semaine (Informatique) et un délai de 72 heures (Communication) : il faut notifier avant de tout savoir.",
+  faux:"« La CNIL seulement si le vol est certain » (Communication), « les patients ne lisent pas ces sites » (Soins)."},
+ {cles:["La vérification prendra encore une semaine, un accès dormant n'est pas exclu (Informatique).","Deux cadres de santé sont à bout (Soins).","La main courante doit être lisible par quelqu'un qui n'a pas vécu la crise (Communication)."],
+  contra:"« La crise est finie, le logiciel remarche » (Soins) ; la vérification n'est pas terminée et la maternité attend toujours.",
+  comb:"Infogest redemande son accès par un autre interlocuteur (Informatique) et la question « qui expliquera aux nouveaux ? » (Communication) : c'est le risque des relèves.",
+  faux:"« On a levé la cellule au bout de trois jours » (Direction), « tout réinstaller en un week-end » (Informatique)."}
+];
+DEBRIEF_KEYS.forEach((k,i)=>{ TOURS[i].keys = k; });
+
+function cardMessages(T, k){
+  const r = T.roles[k];
+  return h("div",{class:"msgs"},
+    h("p",{}, r.p),
+    r.m.map(([t,src,txt])=>h("div",{class:"msg"}, h("div",{class:"msgh"}, h("b",{},t), " – ", src), h("div",{}, txt))));
+}
+
+const ENDINGS = [
+  {k:"secu", t:"Un patient en danger", d:"Un événement indésirable grave est survenu pendant le mode dégradé : une erreur de traitement chez un patient sans historique. Il est déclaré à l'ARS."},
+  {k:"conformite", t:"Le dossier juridique", d:"Déclaration tardive, notification hors délai : l'ARS et la CNIL ouvrent une procédure."},
+  {k:"confiance", t:"La confiance perdue", d:"La presse, le personnel et l'ARS ne croient plus la direction. L'ARS place l'hôpital sous accompagnement renforcé."},
+  {k:"si", t:"La crise qui dure", d:"À J+7, le système n'est pas revenu, ou l'attaquant est revenu. La crise entre dans sa deuxième semaine."},
+  {k:"equipes", t:"Les équipes épuisées", d:"L'hôpital fonctionne, mais les arrêts maladie se multiplient : les équipes ont lâché."},
+  {k:"soins", t:"L'hôpital à l'arrêt", d:"Les services tournent au ralenti : l'activité ne reprendra pas avant plusieurs semaines."}
+];
+const TENU = {t:"L'hôpital a tenu", d:"À J+7, le système revient, les obligations sont tenues, les équipes sont fatiguées mais debout. Ce n'est pas une victoire : c'est une crise bien conduite."};
+
+/* ---------------- moteur (déterministe) ---------------- */
+const clamp = v => Math.max(0, Math.min(10, v));
+function applyTour(g, choices, i){
+  const o = TOURS[i].opts["ABC".indexOf(choices[i])];
+  const r = o.fx(choices); const before = {...g};
+  for(const [k,d] of Object.entries(r.e)) g[k] = clamp(g[k] + d);
+  return {before, after:{...g}, e:r.e, why:r.why};
+}
+function simulate(choices){
+  const g = {...START}; const steps = [];
+  for(let i=0;i<choices.length;i++) steps.push(applyTour(g, choices, i));
+  return {g, steps};
+}
+function ending(g){
+  // la fin est donnée par la jauge la plus basse parmi celles à 3 ou moins (à égalité, l'ordre de ENDINGS)
+  let best = null;
+  for(const e of ENDINGS) if(g[e.k] <= 3 && (best === null || g[e.k] < g[best.k])) best = e;
+  return best || TENU;
+}
+function otherAlerts(g){
+  const e = ending(g);
+  return GAUGES.filter(x => g[x.k] <= 3 && x.k !== e.k).map(x => x.n);
+}
+const gName = k => GAUGES.find(x=>x.k===k).n;
+const fmt = d => (d>0?"+":d<0?"−":"±") + Math.abs(d);
+
+/* ---------------- état et stockage ---------------- */
+const KEY = "montclair-crise-v4";
+const SOFT_SEC = 12*60;
+const TEST = () => location.hash === "#test";
+const minSec = () => TEST() ? 0 : 5*60;
+function load(){ try{ const s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+let S = load() || {screen:"home"};
+
+/* ---------------- utilitaires DOM ---------------- */
+const $ = (sel, root=document) => root.querySelector(sel);
+function h(tag, attrs={}, ...kids){
+  const el = document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs||{})){
+    if(k==="class") el.className = v;
+    else if(k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if(v===true) el.setAttribute(k,"");
+    else if(v!==false && v!=null) el.setAttribute(k, v);
+  }
+  for(const k of kids.flat(Infinity)){ if(k==null||k===false) continue; el.append(k.nodeType ? k : document.createTextNode(String(k))); }
+  return el;
+}
+const app = $("#app");
+let ticker = null;
+let lastView = null;
+function render(){
+  const view = location.hash + "|" + (M.active ? "m" + M.role + "|" + M.tour : (S.screen || "home") + "|" + (S.tour || 0));
+  const keepY = view === lastView ? window.scrollY : 0;
+  lastView = view;
+  clearInterval(ticker);
+  app.innerHTML = "";
+  if(location.hash === "#animateur"){ renderAnim(); window.scrollTo(0, keepY); return; }
+  if(TEST()) app.append(h("p",{class:"notice"},"Mode test\u00a0: le délai minimum de 5 minutes est désactivé. Ne donnez pas ce lien aux étudiants."));
+  if(M.active){ renderMember(); window.scrollTo(0, keepY); return; }
+  ({home:renderHome, intro:renderIntro, tour:renderTour, result:renderResult, reflect:renderReflect, wait:renderWait, end:renderEnd})[S.screen || "home"]();
+  window.scrollTo(0, keepY);
+}
+window.addEventListener("hashchange", render);
+const mmss = s => `${Math.floor(s/60)} min ${String(s%60).padStart(2,"0")} s`;
+
+function topBar(right){
+  return h("header",{class:"top"},
+    h("div",{class:"brand"},"Cellule de crise – Centre hospitalier de Montclair",
+      h("small",{}, S.group ? `Groupe ${S.group}${S.gname ? " : " + S.gname : ""}` : "Exercice de crise cyber")),
+    right || "");
+}
+
+/* Pendant le jeu : seulement le sens des évolutions, tour par tour */
+const arrow = d => d>0 ? h("span",{class:"tr p",title:"en hausse"},"▲") : d<0 ? h("span",{class:"tr m",title:"en baisse"},"▼") : h("span",{class:"tr z",title:"sans effet"},"–");
+function trendPanel(choices, highlightLast){
+  const sim = simulate(choices);
+  return h("aside",{class:"sheet gauges","aria-label":"Évolution de l'hôpital"},
+    h("h2",{style:"margin-top:0"},"Évolution de l'hôpital"),
+    h("p",{class:"meta"},"Les flèches montrent le sens de chaque évolution, tour par tour. Les valeurs exactes seront révélées au bilan."),
+    GAUGES.map(x => h("div",{class:"gauge"},
+      h("div",{class:"name"}, h("span",{}, x.n)),
+      h("div",{class:"trend"},
+        sim.steps.length ? sim.steps.map((st,i)=>h("span",{class:"tcell"+(highlightLast && i===sim.steps.length-1?" last":"")}, h("small",{},"T"+(i+1)), arrow(st.e[x.k]||0)))
+                         : h("span",{class:"meta"},"Pas encore de décision")),
+      h("div",{class:"def"}, x.d))));
+}
+/* Au bilan : les valeurs */
+function gaugePanel(g){
+  return h("aside",{class:"sheet gauges","aria-label":"État de l'hôpital"},
+    h("h2",{style:"margin-top:0"},"État de l'hôpital à J+7"),
+    GAUGES.map(x => { const v = g[x.k];
+      return h("div",{class:"gauge" + (v<=3?" low":"")},
+        h("div",{class:"name"}, h("span",{},x.n), h("span",{class:"v"}, v, "/10")),
+        h("div",{class:"cells","aria-hidden":"true"}, Array.from({length:10},(_,i)=>h("div",{class:"cell"+(i<v?" on":"")}))),
+        h("div",{class:"def"}, x.d)); }));
+}
+
+/* ---------------- écran d'accueil ---------------- */
+/* ---------------- mode membre (téléphone) ---------------- */
+const MKEY = KEY + "-membre";
+let M = (()=>{ try{ return JSON.parse(localStorage.getItem(MKEY)) || {}; }catch(e){ return {}; } })();
+function saveM(){ try{ localStorage.setItem(MKEY, JSON.stringify(M)); }catch(e){} }
+const CODE_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+function tourCode(g, t){ // code de 4 lettres, propre à chaque groupe et à chaque tour
+  let x = ((g*7919 + (t+1)*104729 + 1301) * 2654435761) >>> 0, out = "";
+  for(let k=0;k<4;k++){ out += CODE_ALPHA[x % CODE_ALPHA.length]; x = Math.floor(x / CODE_ALPHA.length) ^ (x*31 >>> 0); x >>>= 0; }
+  return out;
+}
+const MEMBER_ROLES = [
+  {id:"0", n:"Direction", cards:[0]},
+  {id:"1", n:"Informatique et sécurité", cards:[1]},
+  {id:"2", n:"Soins", cards:[2]},
+  {id:"3", n:"Communication et juridique", cards:[3]},
+  {id:"13", n:"Informatique et communication (groupe de 3)", cards:[1,3]},
+  {id:"sec", n:"Secrétaire de crise (groupe de 5)", cards:[]}
+];
+function renderMember(){
+  const role = MEMBER_ROLES.find(r=>r.id===M.role);
+  app.append(h("header",{class:"top"},
+    h("div",{class:"brand"},"Cellule de crise – CH de Montclair", h("small",{}, `Groupe ${M.group}${role ? " : " + role.n : ""}`))));
+  if(!role){
+    app.append(h("div",{class:"sheet"},
+      h("h1",{},"Quel est votre rôle ?"),
+      h("p",{},"Choisissez le rôle que votre groupe vous a attribué. Vous ne verrez que les informations réservées à ce rôle."),
+      h("div",{class:"options"}, MEMBER_ROLES.map(r=>h("button",{class:"opt",onclick:()=>{ M.role=r.id; M.tour=-1; saveM(); render(); }}, h("span",{}, h("span",{class:"lbl"}, r.n)))))));
+  } else {
+    const missions = role.id==="sec" ? [{r:"Secrétaire de crise", m:"Vous tenez le clavier de l'ordinateur du groupe : vous rédigez la justification de chaque décision sous la dictée du groupe, et vous gardez le temps. Votre téléphone ne vous sert pas : tout est sur l'ordinateur.", p:"Relire la décision du tour précédent avant chaque nouveau tour, et annoncer le temps à 5 et à 10 minutes."}]
+                   : role.cards.map(k=>MISSIONS[k]);
+    const err = h("p",{class:"err",role:"alert"});
+    const inp = h("input",{type:"text",id:"mcode",autocomplete:"off",autocapitalize:"characters",spellcheck:"false"});
+    const open = () => {
+      const v = inp.value.trim().toUpperCase();
+      const t = [0,1,2,3,4,5].find(k=>tourCode(M.group,k)===v);
+      if(t===undefined){ err.textContent = "Ce code ne correspond pas. Recopiez le code affiché sur l'ordinateur de votre groupe."; return; }
+      M.tour = t; saveM(); render();
+    };
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter") open(); });
+    const T = M.tour>=0 ? TOURS[M.tour] : null;
+    app.append(
+      T ? h("div",{class:"sheet situation"},
+            h("p",{class:"when"}, `Tour ${M.tour+1} – ${T.when}`), h("h1",{}, T.t),
+            role.cards.length ? role.cards.map(k=>h("div",{class:"mission"},
+                h("h2",{style:"margin-top:4px"}, ROLES[k]),
+                cardMessages(T, k),
+                h("p",{}, h("b",{},"Ce que vous défendez : "), T.roles[k].d)))
+              : h("p",{},"Vous n'avez pas de carte. Tenez le clavier de l'ordinateur du groupe : relisez la décision précédente dans « Vos décisions précédentes », tenez le temps et rédigez la justification."),
+            h("p",{class:"notice"},"Lisez votre carte à voix haute au groupe. Ce que vous défendez est votre position de départ : vous pouvez changer d'avis, à condition de le dire."))
+        : h("div",{class:"sheet"}, h("h1",{},"Votre mission"), missions.map(m=>h("div",{class:"mission"}, h("h2",{style:"margin-top:4px"}, m.r), h("p",{}, m.m), h("p",{class:"meta"}, h("b",{},"À chaque tour : "), m.p)))),
+      h("div",{class:"sheet"},
+        h("h2",{style:"margin-top:0"}, T ? "Tour suivant" : "Ouvrir votre carte"),
+        h("p",{}, "Saisissez le code affiché sur l'ordinateur de votre groupe. Il change à chaque tour."),
+        h("label",{class:"field",for:"mcode"},"Code du tour"), inp, err,
+        h("div",{class:"row",style:"margin-top:10px"}, h("button",{class:"btn",onclick:open},"Ouvrir la carte"),
+          T ? h("button",{class:"btn ghost",onclick:()=>{ M.tour=-1; saveM(); render(); }},"Revoir ma mission") : "")));
+  }
+  app.append(h("footer",{class:"noprint"}, h("span",{},"Mode membre : seules vos informations s'affichent ici."),
+    h("button",{class:"btn ghost small",onclick:()=>{ if(confirm("Quitter le mode membre sur cet appareil ?")){ M={}; saveM(); render(); } }},"Changer de groupe ou de rôle")));
+}
+
+function renderHome(){
+  app.append(topBar());
+  const err = h("p",{class:"err",role:"alert"});
+  const num = h("input",{type:"number",min:"1",max:"20",id:"gnum",inputmode:"numeric"});
+  const nm = h("input",{type:"text",id:"gname",maxlength:"40",placeholder:"Facultatif"});
+  const getNum = () => { const n = parseInt(num.value,10); if(!(n>=1 && n<=20)){ err.textContent = "Indiquez le numéro de votre groupe, entre 1 et 20."; return null; } return n; };
+  app.append(h("div",{class:"sheet situation"},
+    h("p",{class:"when"},"Samedi, 6 h 40"),
+    h("h1",{},"Votre hôpital est attaqué. Vous êtes la cellule de crise."),
+    h("p",{},"Le centre hospitalier de Montclair compte 420 lits (médecine, chirurgie, obstétrique, soins de suite, psychiatrie), 2 200 agents et 15 000 passages aux urgences par an. Ce samedi matin, un rançongiciel bloque le dossier patient."),
+    h("p",{},"Pendant six tours, de samedi matin à mercredi, vous prenez les décisions de la cellule de crise. Chaque décision a des conséquences, et elles changent la suite : votre crise ne ressemblera pas à celle du groupe d'à côté."),
+    h("p",{class:"meta"},"Le scénario est fictif, mais construit à partir de plusieurs attaques réelles contre des hôpitaux français."),
+    h("label",{class:"field",for:"gnum"},"Numéro de votre groupe"), num,
+    h("label",{class:"field",for:"gname"},"Nom de votre groupe (ordinateur du groupe seulement)"), nm, err,
+    h("div",{class:"row",style:"margin-top:14px"},
+      h("button",{class:"btn",onclick:()=>{
+        const n = getNum(); if(n==null) return;
+        S = {screen:"intro", group:n, gname:nm.value.trim(), names:["","","",""], choices:"", just:[], tour:0, jokCert:2, jokExp:2, hintsSeen:[], expertCalls:[], reflect:["","",""], size:4, sec:"", cards:"screen"};
+        save(); render();
+      }},"Ouvrir la cellule de crise (ordinateur du groupe)"),
+      h("button",{class:"btn ghost",onclick:()=>{ const n = getNum(); if(n==null) return; M = {active:true, group:n, role:null, tour:-1}; saveM(); render(); }},"Rejoindre mon groupe (téléphone d'un membre)")),
+    h("p",{class:"meta"},"Un seul ordinateur par groupe ouvre la cellule de crise : c'est lui qui affiche la situation et enregistre les décisions. Chaque membre peut aussi rejoindre son groupe sur son téléphone pour lire ses cartes de rôle.")));
+  app.append(footer());
+}
+
+const COMBO = "Informatique, sécurité, communication et juridique";
+function renderIntro(){
+  app.append(topBar());
+  S.size = S.size || 4;
+  const sizeBtns = [3,4,5].map(n=>h("button",{class:"btn small"+(S.size===n?"":" ghost"),"aria-pressed":String(S.size===n),onclick:()=>{ readNames(); S.size=n; save(); render(); }}, `${n} membres`));
+  // champs de nom selon la taille du groupe
+  const slots = S.size===3 ? [{k:0,label:"Direction"},{k:2,label:"Soins"},{k:1,label:COMBO}]
+                           : [{k:0,label:"Direction"},{k:1,label:"Informatique et sécurité"},{k:2,label:"Soins"},{k:3,label:"Communication et juridique"}];
+  const inputs = slots.map(sl=>h("input",{type:"text",id:"r"+sl.k,value:S.names[sl.k]||"",maxlength:"60",placeholder:"Prénom(s)"}));
+  const secIn = h("input",{type:"text",id:"rsec",value:S.sec||"",maxlength:"60",placeholder:"Prénom(s)"});
+  function readNames(){
+    slots.forEach((sl,i)=>{ S.names[sl.k] = inputs[i].value.trim(); });
+    if(S.size===3) S.names[3] = S.names[1];
+    S.sec = S.size===5 ? secIn.value.trim() : "";
+  }
+  const missionBlock = (title, texts, pr, inp, forId) => h("div",{class:"mission"},
+    h("h3",{}, title), texts.map(t=>h("p",{}, t)), h("p",{class:"meta"}, h("b",{},"À chaque tour : "), pr),
+    h("label",{class:"field",for:forId},"Qui tient ce rôle ?"), inp);
+  const blocks = slots.map((sl,i)=>{
+    if(S.size===3 && sl.k===1){
+      return missionBlock(COMBO, [MISSIONS[1].m, MISSIONS[3].m],
+        "À chaque tour, vous lisez deux cartes : celle de l'informatique et celle de la communication. Quand elles se contredisent, dites-le au groupe.", inputs[i], "r1");
+    }
+    const m = MISSIONS[sl.k];
+    return missionBlock(m.r, [m.m], m.p, inputs[i], "r"+sl.k);
+  });
+  if(S.size===5) blocks.push(missionBlock("Secrétaire de crise",
+    ["Vous tenez le clavier de l'ordinateur du groupe : vous rédigez la justification de chaque décision, sous la dictée du groupe, et vous gardez le temps. Vous n'avez pas de carte : votre rôle est de faire en sorte que rien ne se perde."],
+    "Relire la décision du tour précédent avant d'ouvrir le nouveau tour, et annoncer le temps à 5 et à 10 minutes.", secIn, "rsec"));
+  app.append(h("div",{class:"sheet"},
+    h("h1",{},"Avant de commencer"),
+    h("h2",{},"Combien êtes-vous ?"),
+    h("div",{class:"row"}, sizeBtns),
+    h("p",{class:"meta"}, S.size===3 ? "À trois, un membre tient à la fois l'informatique et la communication : dans les établissements, le RSSI et le DPO travaillent souvent ensemble sur une attaque. La Direction garde son rôle d'arbitre."
+                       : S.size===5 ? "À cinq, le cinquième membre est secrétaire de crise : il tient la main courante et le temps."
+                       : "Un membre par rôle."),
+    h("h2",{},"Répartissez les rôles"),
+    h("p",{},"Lisez chacun votre mission à voix haute avant le tour 1."),
+    blocks));
+  app.append(h("div",{class:"sheet"},
+    h("h2",{style:"margin-top:0"},"Comment se joue un tour"),
+    h("ol",{class:"steps"},
+      h("li",{}, h("b",{},"Lisez la situation"), " à voix haute, puis chaque rôle ouvre sa carte : ce qu'il a vu, les messages qu'il a reçus, et la position qu'il défend. Chacun résume ensuite au groupe ce qui, dans sa carte, compte pour la décision."),
+      h("li",{}, h("b",{},"Discutez et choisissez"), " une option. Le rôle Direction tranche si vous ne vous accordez pas."),
+      h("li",{}, h("b",{},"Justifiez"), " votre choix : sur quelle information repose-t-il, et de quelle carte vient-elle ? Votre réponse apparaîtra dans votre bilan et dans votre restitution."),
+      h("li",{}, h("b",{},"Validez."), " La décision est définitive. Vous découvrez ce qui se passe et dans quel sens l'hôpital évolue."),
+      h("li",{}, h("b",{},"Passez au tour suivant"), " quand vous êtes prêts.")),
+    h("h2",{},"Votre rythme"),
+    h("p",{},"Chaque groupe avance à son rythme. Vous ne pouvez pas valider une décision avant 5 minutes de réflexion ; au-delà de 12 minutes, le chronomètre du tour passe au rouge : il est temps de décider. Quand vous avez fini les six tours, vous préparez votre restitution en attendant le bilan."),
+    h("h2",{},"Ce que vous voyez de l'hôpital"),
+    h("p",{},"Six jauges décrivent l'état de l'hôpital. Pendant le jeu, vous ne voyez que le sens de leur évolution après chaque décision : en hausse, en baisse ou stable. Les valeurs exactes et la façon dont votre crise se termine sont révélées au bilan, à la fin de la séance."),
+    h("div",{class:"scroll"}, h("table",{}, h("tr",{}, h("th",{},"Jauge"), h("th",{},"Ce qu'elle mesure")), GAUGES.map(x=>h("tr",{}, h("td",{}, h("b",{},x.n)), h("td",{}, x.d))))),
+    h("p",{},"Attention à ne pas confondre continuité des soins, sécurité des patients et système d'information : on peut continuer à soigner en exposant ses patients, ou protéger le système en arrêtant de soigner."),
+    h("h2",{},"Vos jokers"),
+    h("p",{},"Deux fois dans la partie, vous pouvez « Appeler le CERT Santé » : un indice s'affiche sur le tour en cours. Deux fois aussi, vous pouvez « Appeler l'expert » : levez la main, votre enseignant vient vous voir."),
+    h("h2",{},"Où chacun lit-il ses cartes ?"),
+    h("div",{class:"row"},
+      h("button",{class:"btn small"+((S.cards||"screen")==="screen"?"":" ghost"),onclick:()=>{ readNames(); S.cards="screen"; save(); render(); }},"Sur cet ordinateur"),
+      h("button",{class:"btn small"+(S.cards==="phones"?"":" ghost"),onclick:()=>{ readNames(); S.cards="phones"; save(); render(); }},"Sur les téléphones des membres")),
+    h("p",{class:"meta"}, S.cards==="phones"
+      ? "Chaque membre ouvre l'application sur son téléphone, choisit « Rejoindre mon groupe », saisit le numéro du groupe et son rôle. À chaque tour, cet ordinateur affiche un code : chacun le saisit pour ouvrir sa carte, et personne ne voit celles des autres."
+      : "Les quatre cartes s'ouvrent sur cet ordinateur, une par une. Chacun lit la sienne à voix haute."),
+    h("div",{class:"row",style:"margin-top:14px"},
+      h("button",{class:"btn",onclick:()=>{ readNames(); S.screen="tour"; S.tour=0; S.openedAt=Date.now(); save(); render(); }},"Commencer le tour 1"))));
+  app.append(footer());
+}
+
+/* ---------------- un tour ---------------- */
+function renderTour(){
+  const i = S.tour, T = TOURS[i];
+  if(!S.openedAt) S.openedAt = Date.now();
+  const elapsed = h("span",{class:"chrono"});
+  app.append(topBar(h("div",{}, h("span",{class:"clock"}, T.when), " ", elapsed)));
+
+  let pick = S.pending || null;
+  const optButtons = T.opts.map((o,k)=>{
+    const L = "ABC"[k];
+    return h("button",{class:"opt","aria-pressed":String(pick===L), onclick:()=>{ pick=L; S.pending=L; save(); optButtons.forEach((b,j)=>b.setAttribute("aria-pressed", String("ABC"[j]===L))); }},
+      h("span",{class:"letter"}, L), h("span",{}, h("span",{class:"lbl"}, o.l), h("br"), h("span",{class:"det"}, o.det)));
+  });
+  const just = h("textarea",{id:"just",placeholder:"Notre décision repose sur… (carte du rôle…)"}, S.pendingJust||"");
+  just.addEventListener("input",()=>{ S.pendingJust = just.value; save(); });
+  const err = h("p",{class:"err",role:"alert"});
+  const validate = h("button",{class:"btn",onclick:()=>{
+      if(Math.floor((Date.now()-S.openedAt)/1000) < minSec()){ err.textContent = "Prenez encore le temps d'en discuter : la validation s'ouvre après 5 minutes."; return; }
+      if(!pick){ err.textContent = "Choisissez une option."; return; }
+      if(!TEST() && (just.value||"").trim().length < 15){ err.textContent = `Indiquez l'information qui fonde votre décision, et sa carte (15 caractères minimum, ${(just.value||"").trim().length} pour l'instant).`; return; }
+      if(!confirm(`Valider l'option ${pick} ? La décision est définitive.`)) return;
+      S.choices += pick; S.just[i] = just.value.trim(); S.pending = null; S.pendingJust = ""; S.screen = "result"; save(); render();
+    }},"Valider la décision");
+  const tick = () => {
+    const s = Math.floor((Date.now() - S.openedAt)/1000);
+    elapsed.textContent = `Tour ${i+1} sur 6 : ${mmss(s)}`;
+    elapsed.classList.toggle("late", s >= SOFT_SEC);
+    const left = minSec() - s;
+    validate.disabled = left > 0;
+    validate.textContent = left > 0 ? `Validation possible dans ${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}` : "Valider la décision";
+  };
+  tick(); ticker = setInterval(tick, 1000);
+
+  const roleCards = ROLES.map((r,k)=>{
+    const secret = h("div",{class:"secret hidden"},
+      cardMessages(T, k),
+      h("p",{}, h("b",{},"Ce que vous défendez : "), T.roles[k].d));
+    const b = h("button",{class:"role","aria-expanded":"false",onclick:()=>{ const open = b.getAttribute("aria-expanded")==="true"; b.setAttribute("aria-expanded", String(!open)); secret.classList.toggle("hidden", open); }},
+      h("b",{}, r + (S.names[k] ? ` (${S.names[k]})` : "")),
+      h("span",{class:"hint"},"Réservé à ce rôle : ouvrez, puis lisez à voix haute."), secret);
+    return b;
+  });
+
+  const hintBox = h("div",{class:"notice" + (S.hintsSeen.includes(i) ? "" : " hidden"), role:"status"}, h("b",{},"CERT Santé : "), "« " + T.hint + " »");
+  const expBox = h("div",{class:"notice hidden", role:"status"},"Levez la main : votre enseignant arrive.");
+  const certBtn = h("button",{class:"btn ghost small", disabled: S.jokCert<=0 || S.hintsSeen.includes(i), onclick:()=>{
+      if(S.jokCert<=0) return; S.jokCert--; S.hintsSeen.push(i); save(); hintBox.classList.remove("hidden"); certBtn.disabled = true; certBtn.textContent = `Appeler le CERT Santé (${S.jokCert} restant${S.jokCert>1?"s":""})`; }},
+    `Appeler le CERT Santé (${S.jokCert} restant${S.jokCert>1?"s":""})`);
+  const expBtn = h("button",{class:"btn ghost small", disabled: S.jokExp<=0, onclick:()=>{
+      if(S.jokExp<=0) return; S.jokExp--; S.expertCalls.push(i); save(); expBox.classList.remove("hidden"); expBtn.disabled = S.jokExp<=0; expBtn.textContent = `Appeler l'expert (${S.jokExp} restant${S.jokExp>1?"s":""})`; }},
+    `Appeler l'expert (${S.jokExp} restant${S.jokExp>1?"s":""})`);
+
+  const past = S.choices.split("").map((L,k)=>{ const o = TOURS[k].opts["ABC".indexOf(L)];
+    return h("li",{}, h("b",{}, `Tour ${k+1} – ${TOURS[k].t} : ${L}. `), o.l, S.just[k] ? h("div",{class:"meta"}, "Justification : " + S.just[k]) : ""); });
+  const main = h("div",{},
+    past.length ? h("details",{class:"sheet noprint"}, h("summary",{}, h("b",{},"Vos décisions précédentes")), h("ul",{}, past)) : "",
+    h("div",{class:"sheet situation"},
+      h("p",{class:"when"}, `Tour ${i+1} – ${T.when}`),
+      h("h1",{}, T.t),
+      T.sit(S.choices).map(p=>h("p",{}, p)),
+      T.variants(S.choices).map(v=>h("p",{class:"variant"}, v))),
+    h("div",{class:"sheet"},
+      h("h2",{style:"margin-top:0"},"Ce que sait chaque rôle"),
+      (S.size===3 ? h("p",{class:"notice"},`Dans votre groupe, ${S.names[1] ? S.names[1] : "la même personne"} lit les deux cartes Informatique et Communication.`) : ""),
+      h("p",{class:"meta"}, (S.cards==="phones" ? "Chaque membre lit ses messages sur son téléphone, puis résume au groupe ce qui compte vraiment. " : "Chaque rôle ouvre sa carte, lit ses messages, puis résume au groupe ce qui compte vraiment. ") + "Ce que vous défendez est votre position de départ : vous pouvez changer d'avis, à condition de le dire."),
+      S.cards==="phones"
+        ? h("div",{},
+            h("p",{class:"notice"}, "Code du tour à saisir sur les téléphones : ", h("span",{class:"code"}, tourCode(S.group, i))),
+            h("details",{}, h("summary",{class:"meta"},"Un téléphone ne fonctionne pas ? Afficher les cartes ici"), h("div",{class:"roles",style:"margin-top:8px"}, roleCards)))
+        : h("div",{class:"roles"}, roleCards)),
+    h("div",{class:"sheet"},
+      h("h2",{style:"margin-top:0"},"Votre décision"),
+      h("div",{class:"options"}, optButtons),
+      (S.size===5 ? h("p",{class:"meta"},`Secrétaire de crise${S.sec ? " (" + S.sec + ")" : ""} : rédigez la justification sous la dictée du groupe, et annoncez le temps à 5 et à 10 minutes.`) : ""),
+      h("label",{class:"field",for:"just"},"Sur quelle information votre décision repose-t-elle, et de quelle carte vient-elle ?"), just, err,
+      h("div",{class:"row",style:"justify-content:space-between;margin-top:12px"},
+        h("div",{class:"jokers noprint"}, certBtn, expBtn), validate),
+      hintBox, expBox));
+  app.append(h("div",{class:"grid"}, main, trendPanel(S.choices, false)));
+  app.append(footer());
+}
+
+/* ---------------- conséquence ---------------- */
+function renderResult(){
+  const i = S.choices.length - 1, T = TOURS[i], L = S.choices[i], o = T.opts["ABC".indexOf(L)];
+  const st = simulate(S.choices).steps[i];
+  app.append(topBar(h("span",{class:"clock"}, T.when)));
+  const up = Object.entries(st.e).filter(([k,d])=>d>0), down = Object.entries(st.e).filter(([k,d])=>d<0);
+  const main = h("div",{},
+    h("div",{class:"sheet"},
+      h("p",{}, h("span",{class:"stamp fresh"}, `Tour ${i+1} : option ${L} décidée`)),
+      h("h1",{}, o.l),
+      h("p",{class:"meta"}, "Votre justification : « " + (S.just[i]||"") + " »"),
+      
+      h("h2",{},"Ce qui se passe"), h("p",{}, o.cq),
+      h("div",{class:"avis"}, h("b",{}, o.avis[0] + " : "), "« " + o.avis[1] + " »"),
+      h("h2",{},"Dans quel sens l'hôpital évolue"),
+      h("ul",{class:"effects","aria-live":"polite"},
+        up.map(([k])=>h("li",{}, arrow(1), " ", h("b",{}, gName(k)), " : en hausse")),
+        down.map(([k])=>h("li",{}, arrow(-1), " ", h("b",{}, gName(k)), " : en baisse")),
+        (!up.length && !down.length) ? h("li",{},"Aucune jauge ne bouge.") : h("li",{class:"meta"},"Les autres jauges ne bougent pas.")),
+      st.why.map(w=>h("p",{class:"because"}, h("b",{},"Ce que vos choix précédents changent : "), w)),
+      h("p",{class:"notice"}, "Code d'avancement à transmettre à l'enseignant : ", h("span",{class:"code"}, trajCode())),
+      h("div",{class:"row",style:"margin-top:14px"},
+        h("button",{class:"btn",onclick:()=>{ if(i<5){ S.screen="tour"; S.tour=i+1; S.openedAt=Date.now(); } else { S.screen="reflect"; } save(); render(); }},
+          i<5 ? `Passer au tour ${i+2}` : "Préparer votre restitution"))));
+  app.append(h("div",{class:"grid"}, main, trendPanel(S.choices, true)));
+  app.append(footer());
+}
+
+/* ---------------- préparation de la restitution ---------------- */
+const REFLECT = [
+  "Quelle décision changeriez-vous, et pourquoi ?",
+  "Quelle option écartée auriez-vous voulu tester, et que pensez-vous qu'elle aurait changé ?",
+  "Quelle question aimeriez-vous poser à un autre groupe ?"
+];
+function renderReflect(){
+  app.append(topBar(h("span",{class:"clock"},"Mercredi, fin de crise")));
+  const areas = REFLECT.map((q,k)=>{ const a = h("textarea",{id:"q"+k}, S.reflect[k]||""); a.addEventListener("input",()=>{ S.reflect[k]=a.value; save(); }); return a; });
+  const err = h("p",{class:"err",role:"alert"});
+  const main = h("div",{class:"sheet"},
+    h("h1",{},"Préparez votre restitution"),
+    h("p",{},"Les six tours sont joués. En attendant que l'enseignant ouvre le bilan, assurez-vous que chaque membre du groupe peut défendre vos choix : c'est l'enseignant qui désignera qui répond. Vos réponses apparaîtront dans votre fiche trajectoire."),
+    REFLECT.map((q,k)=>[h("label",{class:"field",for:"q"+k}, q), areas[k]]), err,
+    h("div",{class:"row",style:"margin-top:12px"},
+      h("button",{class:"btn",onclick:()=>{ if(!TEST() && areas.some(a=>a.value.trim().length<10)){ err.textContent="Répondez aux trois questions, une phrase suffit."; return; } S.screen="wait"; save(); render(); }},"Enregistrer et attendre le bilan")));
+  app.append(h("div",{class:"grid"}, main, trendPanel(S.choices, false)));
+  app.append(footer());
+}
+
+/* ---------------- attente du code du bilan ---------------- */
+function renderWait(){
+  app.append(topBar());
+  const inp = h("input",{type:"text",id:"code",autocomplete:"off",autocapitalize:"characters",spellcheck:"false"});
+  const err = h("p",{class:"err",role:"alert"});
+  const go = () => {
+    const v = inp.value.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    if(v !== CODE_BILAN){ err.textContent = "Ce code ne correspond pas. Attendez l'annonce de votre enseignant."; return; }
+    S.screen = "end"; save(); render();
+  };
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
+  const main = h("div",{class:"sheet"},
+    h("h1",{},"En attente du bilan"),
+    h("p",{},"Votre crise est terminée. Quand tous les groupes auront fini, l'enseignant annoncera le code du bilan : vous découvrirez alors l'état exact de l'hôpital et la façon dont votre crise se termine."),
+    h("p",{class:"meta"},"En attendant, relisez ensemble vos justifications des six tours : chacun doit pouvoir les défendre."),
+    h("label",{class:"field",for:"code"},"Code du bilan"), inp, err,
+    h("div",{class:"row",style:"margin-top:12px"},
+      h("button",{class:"btn",onclick:go},"Ouvrir le bilan"),
+      h("button",{class:"btn ghost",onclick:()=>{ S.screen="reflect"; save(); render(); }},"Revoir mes réponses")));
+  app.append(h("div",{class:"grid"}, main, trendPanel(S.choices, false)));
+  app.append(footer());
+  setTimeout(()=>inp.focus(), 50);
+}
+
+/* ---------------- bilan ---------------- */
+function trajCode(){ return `G${S.group}-${S.choices}`; }
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function ficheHTML(){
+  const sim = simulate(S.choices), e = ending(sim.g);
+  const rows = S.choices.split("").map((L,i)=>{ const o = TOURS[i].opts["ABC".indexOf(L)]; const st = sim.steps[i];
+    return `<tr><td>${i+1}. ${esc(TOURS[i].t)}</td><td><b>${L}</b> – ${esc(o.l)}</td><td>${esc(S.just[i]||"")}</td><td>${Object.entries(st.e).filter(([k,d])=>d).map(([k,d])=>esc(gName(k))+" "+fmt(d)).join(", ")}</td></tr>`; }).join("");
+  const gs = GAUGES.map(x=>`<li>${x.n} : <b>${sim.g[x.k]}/10</b></li>`).join("");
+  const rf = REFLECT.map((q,k)=>`<p><b>${esc(q)}</b><br>${esc(S.reflect[k]||"")}</p>`).join("");
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Trajectoire ${trajCode()}</title><style>body{font-family:system-ui,Arial,sans-serif;max-width:900px;margin:24px auto;padding:0 16px;color:#16233A}table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ccd;padding:6px;text-align:left;vertical-align:top}</style></head><body>
+<h1>Cellule de crise – CH de Montclair</h1><p>Groupe ${S.group}${S.gname?" : "+esc(S.gname):""}. Taille du groupe : ${S.size||4}. Rôles : ${ROLES.map((r,i)=>esc(r)+(S.names[i]?" ("+esc(S.names[i])+")":"")).join(" ; ")}.</p>
+<h2>Fin : ${esc(e.t)}</h2><p>${esc(e.d)}</p>${otherAlerts(sim.g).length ? "<p><b>Autres jauges en alerte :</b> " + esc(otherAlerts(sim.g).join(", ")) + ".</p>" : ""}<h2>Code de trajectoire : ${trajCode()}</h2>
+<h2>Décisions</h2><table><tr><th>Tour</th><th>Choix</th><th>Justification</th><th>Effets</th></tr>${rows}</table>
+<h2>État final</h2><ul>${gs}</ul><h2>Restitution</h2>${rf}</body></html>`;
+}
+async function downloadFiche(msg){
+  const html = ficheHTML(), name = `trajectoire-groupe-${S.group}.html`;
+  try{
+    const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+    if(dl){ await dl.save({filename:name, data:html}); msg.textContent = "Fiche enregistrée."; return; }
+  }catch(e){ if(e && e.code==="declined"){ msg.textContent = "Enregistrement annulé."; return; } }
+  try{
+    const url = URL.createObjectURL(new Blob([html],{type:"text/html"}));
+    const a = h("a",{href:url, download:name}); document.body.append(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000); msg.textContent = "Fiche téléchargée.";
+  }catch(e){ msg.textContent = "Le téléchargement n'est pas disponible ici : recopiez votre code de trajectoire."; }
+}
+function renderEnd(){
+  const sim = simulate(S.choices), e = ending(sim.g);
+  app.append(topBar(h("span",{class:"clock"},"Bilan à J+7")));
+  const msg = h("p",{class:"meta",role:"status"});
+  const main = h("div",{},
+    h("div",{class:"sheet situation"},
+      h("p",{class:"when"},"Bilan à J+7"),
+      h("h1",{}, e.t), h("p",{}, e.d),
+      otherAlerts(sim.g).length ? h("p",{class:"variant"}, "Autres jauges en alerte : " + otherAlerts(sim.g).join(", ") + ".") : "",
+      h("p",{}, "Votre code de trajectoire, à donner à l'enseignant : ", h("span",{class:"code"}, trajCode())),
+      h("div",{class:"row noprint"},
+        h("button",{class:"btn",onclick:()=>downloadFiche(msg)},"Télécharger la fiche trajectoire"),
+        h("button",{class:"btn ghost",onclick:()=>{ try{ navigator.clipboard.writeText(trajCode()); msg.textContent="Code copié."; }catch(err){ msg.textContent="Copie impossible : notez le code à la main."; } }},"Copier le code")),
+      msg),
+    h("div",{class:"sheet"},
+      h("h2",{style:"margin-top:0"},"Votre trajectoire, avec les valeurs"),
+      h("p",{class:"meta"},"Ce tableau montre enfin le poids de chaque décision. Comparez-le à ce que vous aviez ressenti pendant le jeu."),
+      h("div",{class:"scroll"}, h("table",{},
+        h("tr",{}, h("th",{},"Tour"), h("th",{},"Choix"), h("th",{},"Votre justification"), h("th",{},"Effets")),
+        S.choices.split("").map((L,i)=>{ const o = TOURS[i].opts["ABC".indexOf(L)], st = sim.steps[i];
+          return h("tr",{}, h("td",{}, `${i+1}. ${TOURS[i].t}`), h("td",{}, h("b",{},L+" "), o.l), h("td",{}, S.just[i]||""),
+            h("td",{}, Object.entries(st.e).filter(([k,d])=>d).map(([k,d])=>`${gName(k)} ${fmt(d)}`).join(", "))); })))),
+    h("div",{class:"sheet"},
+      h("h2",{style:"margin-top:0"},"Votre restitution"),
+      REFLECT.map((q,k)=>[h("h3",{}, q), h("p",{}, S.reflect[k]||"")])));
+  app.append(h("div",{class:"grid"}, main, gaugePanel(sim.g)));
+  app.append(footer());
+}
+
+function footer(){
+  return h("footer",{class:"noprint"},
+    h("span",{},"Scénario fictif, construit pour un exercice de formation."),
+    S.screen && S.screen!=="home" ? h("button",{class:"btn ghost small",onclick:()=>{ if(confirm("Effacer cette partie et recommencer ? Cette action est définitive.")){ try{localStorage.removeItem(KEY);}catch(e){} S={screen:"home"}; render(); } }},"Recommencer la partie") : "");
+}
+
+/* ============================================================
+   Écran animateur (#animateur)
+   ============================================================ */
+const A = (()=>{ try{ return JSON.parse(localStorage.getItem(KEY+"-anim")) || {}; }catch(e){ return {}; } })();
+function saveA(){ try{ localStorage.setItem(KEY+"-anim", JSON.stringify(A)); }catch(e){} }
+function renderAnim(){
+  A.dur = A.dur || 75*60; A.left = A.left ?? A.dur; A.run = A.run || false; A.codes = A.codes || ""; A.showCode = !!A.showCode;
+  app.append(h("header",{class:"top"},
+    h("div",{class:"brand"},"Écran animateur", h("small",{},"Exercice de crise cyber – CH de Montclair")),
+    h("a",{href:"#",class:"meta",onclick:(e)=>{e.preventDefault(); history.replaceState(null,"",location.pathname+location.search); render();}},"Revenir à l'écran des groupes")));
+
+  const big = h("div",{class:"big"});
+  const paint = ()=>{ const s=Math.max(0,A.left); big.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; big.classList.toggle("late", A.left<=10*60); };
+  paint();
+  if(A.run){ A.endAt = A.endAt || (Date.now() + A.left*1000); ticker = setInterval(()=>{ A.left = Math.max(0, Math.round((A.endAt-Date.now())/1000)); paint(); if(A.left<=0){ A.run=false; clearInterval(ticker); } saveA(); }, 500); }
+  const durIn = h("input",{type:"number",min:"10",max:"180",value:String(Math.round(A.dur/60)),style:"width:90px"});
+  app.append(h("section",{class:"sheet"},
+    h("h2",{style:"margin-top:0"},"Temps de jeu restant"), big,
+    h("p",{class:"meta",style:"text-align:center"},"Pour tester le jeu sans attendre 5 minutes par tour\u00a0: ", h("a",{href:"#test"},"ouvrir le mode test"), "."),
+    h("div",{class:"row",style:"justify-content:center;margin:10px 0"},
+      h("button",{class:"btn",onclick:()=>{ if(A.run){ A.run=false; A.endAt=null; } else { A.run=true; A.endAt=Date.now()+A.left*1000; } saveA(); render(); }}, A.run?"Mettre en pause":"Démarrer"),
+      h("button",{class:"btn ghost",onclick:()=>{ A.dur = Math.max(10,parseInt(durIn.value,10)||75)*60; A.left=A.dur; A.run=false; A.endAt=null; saveA(); render(); }},"Remettre à zéro"),
+      h("label",{class:"meta"}," Durée (min) ", durIn)),
+    h("p",{class:"meta",style:"text-align:center"},"Les groupes avancent à leur rythme : environ 10 à 12 minutes par tour, 5 minutes au minimum. Rappelez l'heure à mi-parcours."),
+    h("div",{class:"notice"}, "Code du bilan, à annoncer quand tous les groupes ont fini : ", A.showCode ? h("span",{class:"code"}, CODE_BILAN) : h("span",{class:"meta"},"masqué")),
+    h("button",{class:"btn ghost small",onclick:()=>{ A.showCode=!A.showCode; saveA(); render(); }}, A.showCode?"Masquer le code":"Afficher le code")));
+
+  const ta = h("textarea",{placeholder:"Un code par ligne, par exemple : G3-ABCABA"}, A.codes);
+  const out = h("div",{});
+  const compare = ()=>{
+    A.codes = ta.value; saveA(); out.innerHTML = "";
+    const rows = []; const bad = [];
+    ta.value.split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean).forEach(s=>{
+      const m = s.toUpperCase().match(/^G?\s*(\d+)\s*[-: ]?\s*([ABC]{1,6})$/);
+      if(m) rows.push({grp:parseInt(m[1],10), c:m[2]}); else bad.push(s);
+    });
+    if(bad.length) out.append(h("p",{class:"err"}, "Codes non reconnus : " + bad.join(", ")));
+    if(!rows.length){ out.append(h("p",{class:"meta"},"Saisissez les codes des groupes pour afficher la comparaison.")); return; }
+    // un même groupe peut être saisi plusieurs fois au fil des tours : on garde son code le plus avancé
+    const best = new Map(); rows.forEach(r=>{ const o = best.get(r.grp); if(!o || r.c.length >= o.c.length) best.set(r.grp, r); });
+    const rows2 = [...best.values()].sort((a,b)=>a.grp-b.grp);
+    const res = rows2.map(r=>({...r, ...simulate(r.c)}));
+    out.append(h("h3",{},"Trajectoires"), h("div",{class:"scroll"}, h("table",{},
+      h("tr",{}, h("th",{},"Groupe"), TOURS.map((t,i)=>h("th",{}, `T${i+1}`)), GAUGES.map(x=>h("th",{title:x.d}, x.n)), h("th",{},"Fin")),
+      res.map(r=>h("tr",{}, h("td",{}, h("b",{},"G"+r.grp)), [0,1,2,3,4,5].map(i=>h("td",{}, r.c[i] || "…")), GAUGES.map(x=>r.c.length<6 ? h("td",{class:"meta"},"–") : h("td",{style:(r.g[x.k]<=3?"color:var(--alarm);font-weight:800":null)}, r.g[x.k])), h("td",{}, r.c.length===6 ? ending(r.g).t : `Tour ${r.c.length+1} en cours`))))));
+    out.append(h("h3",{},"Répartition des choix, tour par tour"));
+    TOURS.forEach((t,i)=>{
+      const reached = res.filter(r=>r.c.length>i).length;
+      out.append(h("h3",{style:"font-size:1rem"}, `Tour ${i+1} : ${t.t} (${reached} groupe${reached>1?"s":""} sur ${res.length} ont décidé)`),
+        h("div",{class:"dist"}, t.opts.map((o,k)=>{ const L="ABC"[k]; const who = res.filter(r=>r.c[i]===L).map(r=>"G"+r.grp);
+          return h("div",{}, h("b",{}, `${L} – ${who.length} groupe${who.length>1?"s":""}`), h("br"), h("span",{class:"meta"}, o.l), h("br"), who.join(", ")); })));
+    });
+  };
+  app.append(h("section",{class:"sheet"},
+    h("h2",{style:"margin-top:0"},"Comparer les trajectoires"),
+    h("p",{class:"meta"},"Collez les codes reçus des groupes, à tout moment : codes d'avancement en cours de jeu (par exemple G3-AB) ou codes de trajectoire complets. Collez tout, même en double : le code le plus avancé de chaque groupe est retenu. Les jauges sont recalculées à partir des choix."),
+    ta, h("div",{class:"row",style:"margin:10px 0"}, h("button",{class:"btn",onclick:compare},"Afficher la comparaison")), out));
+  if(A.codes) compare();
+
+  app.append(h("section",{class:"sheet"},
+    h("h2",{style:"margin-top:0"},"Référence du scénario, pour le débriefing"),
+    h("p",{class:"meta"},"Effets de base, hors effets des choix précédents."),
+    TOURS.map((t,i)=>h("div",{}, h("h3",{}, `Tour ${i+1} – ${t.when} : ${t.t}`),
+      h("div",{class:"scroll"}, h("table",{},
+        h("tr",{}, h("th",{},"Option"), h("th",{},"Effets de base"), h("th",{},"Selon les choix précédents"), h("th",{},"Ce qui se passe")),
+        t.opts.map((o,k)=>{ const base = o.fx("BCABAA").e;
+          const vars = new Map();
+          for(const a of "ABC") for(const b of "ABC") for(const c of "ABC") for(const d of "ABC") for(const f of "ABC"){
+            const r = o.fx(a+b+c+d+f+"A"); r.why.forEach(w => vars.set(w, Object.entries(r.e).filter(([kk,dd])=>dd).map(([kk,dd])=>`${gName(kk)} ${fmt(dd)}`).join(", "))); }
+          return h("tr",{}, h("td",{}, h("b",{},"ABC"[k]+" "), o.l), h("td",{}, Object.entries(base).filter(([kk,d])=>d).map(([kk,d])=>`${gName(kk)} ${fmt(d)}`).join(", ") || "Aucun"),
+            h("td",{}, vars.size ? [...vars].map(([w,e])=>h("div",{class:"meta"}, w + " (" + e + ")")) : "Aucun changement"), h("td",{}, o.cq)); }))),
+      h("p",{class:"meta"}, "Indice du CERT Santé : " + t.hint),
+      h("details",{}, h("summary",{class:"meta"},"Ce que les cartes doivent faire émerger"),
+        h("ul",{},
+          h("li",{}, h("b",{},"Informations décisives : "), t.keys.cles.join(" ")),
+          h("li",{}, h("b",{},"Contradiction entre deux cartes : "), t.keys.contra),
+          h("li",{}, h("b",{},"Informations à combiner : "), t.keys.comb),
+          h("li",{}, h("b",{},"Faux amis : "), t.keys.faux)))))));
+}
+
+render();
+
+</script>
+</body>
+</html>
