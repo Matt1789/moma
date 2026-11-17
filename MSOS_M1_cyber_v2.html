@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cellule de crise – CH de Montclair</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF2F6; --sheet:#FFFFFF; --ink:#16233A; --muted:#55627A; --rule:#C9D3DF;
+  --ballpoint:#1F3A93; --alarm:#C8102E; --plus:#1E7A3C; --minus:#B3261E; --amber:#9A5B00;
+  --bar-bg:#DDE4EC; --focus:#1F3A93; --shadow:0 1px 0 rgba(22,35,58,.08);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1724; --sheet:#172235; --ink:#E7EDF5; --muted:#A3B0C4; --rule:#2B3A52;
+    --ballpoint:#8FB0FF; --alarm:#FF6B7D; --plus:#6FD08C; --minus:#FF8A80; --amber:#F2B45A;
+    --bar-bg:#24324A; --focus:#8FB0FF; --shadow:none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1724; --sheet:#172235; --ink:#E7EDF5; --muted:#A3B0C4; --rule:#2B3A52;
+  --ballpoint:#8FB0FF; --alarm:#FF6B7D; --plus:#6FD08C; --minus:#FF8A80; --amber:#F2B45A;
+  --bar-bg:#24324A; --focus:#8FB0FF; --shadow:none; color-scheme: dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:17px;line-height:1.5;font-variant-numeric:tabular-nums}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 20px 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:18px}
+.brand{font-weight:800;font-size:1.05rem;letter-spacing:.01em}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:.85rem}
+.clock{font-weight:700;color:var(--alarm);font-size:1.05rem}
+.meta{color:var(--muted);font-size:.9rem}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0 .3em;font-weight:800}
+h2{font-size:1.3rem;margin:1.2em 0 .5em;font-weight:700}
+h3{font-size:1.05rem;margin:.8em 0 .3em}
+p{margin:.4em 0 .8em;max-width:75ch}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:24px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;box-shadow:var(--shadow)}
+.sheet + .sheet{margin-top:16px}
+.situation{border-left:6px solid var(--alarm)}
+.situation .when{font-weight:700;color:var(--alarm)}
+.variant{background:color-mix(in srgb,var(--alarm) 8%,transparent);border-radius:4px;padding:8px 12px;margin-top:8px}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+@media (max-width:600px){.roles{grid-template-columns:1fr}}
+.role{border:1px dashed var(--rule);border-radius:6px;padding:10px 12px;background:transparent;text-align:left;cursor:pointer;width:100%}
+.role > b{display:block}
+.role .hint{color:var(--muted);font-size:.9rem}
+.role[aria-expanded="true"]{border-style:solid;border-color:var(--ballpoint)}
+.role[aria-expanded="true"]{grid-column:1 / -1}
+.msg div:last-child{font-size:.97rem}
+.role .secret{margin-top:6px}
+.options{display:grid;gap:10px}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;background:var(--sheet);border:2px solid var(--rule);border-radius:6px;padding:12px 14px;cursor:pointer}
+.opt:hover{border-color:var(--muted)}
+.opt[aria-pressed="true"]{border-color:var(--ballpoint);background:color-mix(in srgb,var(--ballpoint) 7%,var(--sheet))}
+.opt .letter{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-weight:800;color:var(--ballpoint)}
+.opt .lbl{font-weight:700}
+.opt .det{color:var(--muted);font-size:.95rem}
+label.field{display:block;font-weight:600;margin:14px 0 6px}
+textarea,input[type=text],input[type=number]{width:100%;border:1px solid var(--rule);border-radius:6px;padding:10px 12px;background:var(--paper)}
+textarea{min-height:84px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:2px solid var(--ink);background:var(--ink);color:var(--sheet);border-radius:6px;padding:10px 16px;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.small{padding:6px 10px;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.err{color:var(--minus);font-weight:600}
+.gauges{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.gauge{margin:10px 0 14px}
+.gauge .name{display:flex;justify-content:space-between;font-weight:700;font-size:.95rem}
+.gauge .def{color:var(--muted);font-size:.8rem;line-height:1.3}
+.cells{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:5px}
+.cell{height:12px;border-radius:2px;background:var(--bar-bg)}
+.cell.on{background:var(--ink)}
+.gauge.low .cell.on{background:var(--alarm)}
+.gauge .name .v{font-weight:800}
+.delta{font-weight:800;margin-left:6px}
+.delta.p{color:var(--plus)} .delta.m{color:var(--minus)}
+.stamp{display:inline-block;border:3px solid var(--ballpoint);color:var(--ballpoint);padding:4px 10px;border-radius:4px;font-weight:800;transform:rotate(-2deg)}
+@media (prefers-reduced-motion:no-preference){.stamp.fresh{animation:stamp .35s ease-out}}
+@keyframes stamp{from{transform:rotate(-2deg) scale(1.6);opacity:0}to{transform:rotate(-2deg) scale(1);opacity:1}}
+.effects{list-style:none;padding:0;margin:8px 0}
+.effects li{padding:4px 0;border-bottom:1px solid var(--rule)}
+.because{color:var(--ballpoint)}
+.avis{border-left:4px solid var(--ballpoint);padding:6px 12px;margin:10px 0;font-style:italic}
+.jokers{display:flex;gap:8px;flex-wrap:wrap}
+.notice{background:color-mix(in srgb,var(--ballpoint) 9%,transparent);border-radius:6px;padding:10px 12px;margin:10px 0}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--rule);padding:7px 8px;text-align:left;vertical-align:top;font-size:.95rem}
+th{font-weight:700}
+.scroll{overflow-x:auto}
+.big{font-size:clamp(4rem,14vw,10rem);font-weight:800;line-height:1;text-align:center;letter-spacing:.02em}
+.big.late{color:var(--alarm)}
+.code{font-weight:800;font-size:1.4rem;letter-spacing:.06em}
+.dist{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dist div{border:1px solid var(--rule);border-radius:6px;padding:8px}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+.hidden{display:none!important}
+.tr{font-weight:800;font-size:1rem}
+.tr.p{color:var(--plus)} .tr.m{color:var(--minus)} .tr.z{color:var(--muted)}
+.trend{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 2px}
+.tcell{display:inline-flex;flex-direction:column;align-items:center;min-width:28px;border:1px solid var(--rule);border-radius:4px;padding:2px 4px}
+.tcell small{font-size:.7rem;color:var(--muted)}
+.tcell.last{border-color:var(--ballpoint);border-width:2px}
+.msgs{margin-top:6px}
+.msg{border-left:3px solid var(--rule);padding:4px 10px;margin:8px 0}
+.msgh{font-size:.85rem;color:var(--muted)}
+.mission{border-top:1px solid var(--rule);padding-top:6px;margin-top:10px}
+.steps li{margin:.35em 0;max-width:75ch}
+.chrono{color:var(--muted);font-size:.9rem;margin-left:8px}
+.chrono.late{color:var(--alarm);font-weight:700}
+@media print{.noprint{display:none!important} body{background:#fff;color:#000} .sheet{border:none;box-shadow:none}}
+.kind{display:inline-block;font-size:.8rem;font-weight:700;border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:middle;border:1px solid currentColor}
+.kind.doctrine{color:var(--ballpoint)}
+.kind.arbitrage{color:var(--amber)}
+.budget{font-size:1.05rem;margin:4px 0 10px}
+.palette{display:grid;gap:12px}
+fieldset.cat{border:1px solid var(--rule);border-radius:6px;padding:8px 12px 12px;margin:0}
+fieldset.cat legend{font-weight:700;padding:0 6px}
+.bricks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.brick{border:2px solid var(--rule);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;justify-content:space-between;background:var(--sheet)}
+.brick.on{border-color:var(--ballpoint);background:color-mix(in srgb,var(--ballpoint) 7%,var(--sheet))}
+.bhead{display:flex;gap:10px;align-items:flex-start}
+.bid{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid var(--ballpoint);color:var(--ballpoint);display:grid;place-items:center;font-weight:800}
+.blbl{font-weight:600;font-size:.97rem}
+.bbtn{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:6px;padding:6px 10px;font-weight:700;cursor:pointer;text-align:left}
+.bbtn[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.bbtn:disabled{opacity:.4;cursor:not-allowed}
+.bbtn.small{font-size:.88rem;padding:5px 8px}
+.bbtn .cost{font-weight:400}
+.delays{display:flex;flex-wrap:wrap;gap:6px}
+.event{border:2px solid var(--alarm);border-radius:6px;padding:10px 12px;margin-top:10px;background:color-mix(in srgb,var(--alarm) 6%,transparent)}
+.doc{border:1px solid var(--rule);border-left:4px solid var(--amber);border-radius:4px;padding:6px 12px;margin:8px 0;background:var(--paper)}
+.doc p{margin:.3em 0}
+.doch{font-size:.85rem;color:var(--muted)}
+.doc img,.doc audio{max-width:100%;margin:6px 0}
+ul.why{list-style:none;padding-left:18px;margin:4px 0 6px}
+ul.why li{border:none;padding:2px 0;font-size:.95rem}
+ul.cons li{margin:.3em 0}
+.code.small{font-size:1rem;letter-spacing:0;word-break:break-word}
+.tourbil{border-top:1px solid var(--rule);padding:8px 0}
+.tourbil summary{cursor:pointer}
+.prof{display:flex;flex-wrap:wrap;gap:8px;align-items:center;width:100%}
+.costhelp{margin-top:4px}
+.costhelp summary{cursor:pointer}
+.rolewrap{border:1px dashed var(--rule);border-radius:6px;padding:0}
+.rolewrap.open{border-style:solid;border-color:var(--ballpoint);grid-column:1 / -1}
+.rolewrap .role{border:none;width:100%}
+.rolewrap .secret{padding:0 12px 10px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+"use strict";
+/* Exercice de crise cyber – version 2. Source : specification.md (livrable validé du 17/11/2026) */
+/* ============================================================
+   Scénario v2 – CH de Montclair
+   Source : projets/msos-m1-cyber/livrable_valide.md (§3 à §5)
+   Jauges : soins, secu, confiance, conformite, si, equipes (0 à 10)
+   Conditions : {t:tour, b:brique ou [briques], d:délai?} · {not:cond} · {all:[cond…]}
+   ============================================================ */
+
+const GAUGES = [
+  {k:"soins", n:"Continuité des soins", c:"Soins", d:"Accueillir et soigner : services ouverts, délais, activité."},
+  {k:"secu", n:"Sécurité des patients", c:"Sécu", d:"Le risque d'erreur ou de préjudice pour un patient pris en charge."},
+  {k:"confiance", n:"Confiance", c:"Conf", d:"Ce que pensent l'ARS, le public et le personnel."},
+  {k:"conformite", n:"Conformité", c:"Conform", d:"Les obligations : déclaration d'incident, CNIL, plainte."},
+  {k:"si", n:"Système d'information", c:"SI", d:"Contenir l'incident et retrouver un système sain (cybersécurité)."},
+  {k:"equipes", n:"Endurance des équipes", c:"Équipes", d:"La capacité du personnel à tenir dans la durée : charge, fatigue, moral."}
+];
+const START = {soins:6, secu:6, confiance:6, conformite:5, si:3, equipes:6};
+const ROLES = ["Direction", "Informatique et sécurité", "Soins", "Communication et juridique"];
+const ROLE_KEYS = ["direction", "informatique", "soins", "comjur"];
+
+const DELAYS = {m:"maintenant", s:"ce soir", a:"aujourd'hui", l:"lundi", d:"demain avant 6 h 40", x:"après l'analyse complète"};
+
+const MISSIONS = [
+  {r:"Direction", m:"Vous pilotez la cellule de crise et vous tranchez quand le groupe ne s'accorde pas. Vous êtes l'interlocuteur de l'ARS (agence régionale de santé) et du conseil de surveillance. Le directeur est l'autorité responsable de la sécurité des systèmes d'information : la décision finale vous revient, et vous en répondez.",
+   p:"Distribuer la parole, faire décider dans le temps, écrire chaque décision dans la main courante."},
+  {r:"Informatique et sécurité", m:"Vous représentez le service informatique et le RSSI (responsable de la sécurité des systèmes d'information). Votre priorité : contenir l'attaque, protéger les sauvegardes, puis restaurer. Vous êtes l'interlocuteur du CERT Santé (le centre national d'appui aux établissements de santé face aux incidents de cybersécurité) et des prestataires.",
+   p:"Dire clairement ce que vous savez, ce que vous ne savez pas, et combien de temps prendra chaque option."},
+  {r:"Soins", m:"Vous représentez la direction des soins et les chefs de service. Votre priorité : que les patients présents et à venir soient pris en charge sans risque. Vous organisez le mode dégradé et vous êtes l'interlocuteur du SAMU et du CHU voisin.",
+   p:"Rappeler à chaque décision ce qu'elle change, concrètement, au lit du patient."},
+  {r:"Communication et juridique", m:"Vous portez la parole de l'hôpital vers le personnel, la presse, les patients et les familles. Vous veillez aussi aux obligations : déclaration d'incident, plainte, notification à la CNIL (Commission nationale de l'informatique et des libertés), avec le DPO (délégué à la protection des données).",
+   p:"Vérifier à chaque tour qu'aucune obligation n'est oubliée, et qu'aucune phrase publique ne devra être démentie."}
+];
+
+/* Effet : {j:jauge, d:delta, why:"parce que…", v:[{if:condition, d:delta}]} */
+const fx = (j, d, why, v) => v ? {j, d, why, v} : {j, d, why};
+
+/* ---------------- Documents à lire (§5) ---------------- */
+const DOCS = {
+  D1:{tour:1, role:3, titre:"Courriel d'Infogest, reçu à 7 h 02",
+      texte:"Objet : Rétablissement du service, demande d'accès\nBonjour, ici Marc D., support Infogest. Nos équipes sont prêtes à intervenir à distance dès maintenant. Merci de laisser ouvert notre accès à distance (VPN) habituel (identifiants inchangés depuis 2019). Notre accès est parfaitement sécurisé. Sans lui, aucune intervention avant 48 h. Merci de votre retour rapide."},
+  D2:{tour:2, role:0, titre:"Message vocal de l'ARS, 9 h 55", media:null,
+      texte:"« Bonjour, ici la permanence de l'ARS Occitanie. Nous devons savoir avant 11 h si vos urgences restent ouvertes et si vous déclenchez votre plan blanc, afin d'organiser avec le SAMU l'orientation des ambulances. Merci de nous confirmer votre décision par écrit. »"},
+  D3:{tour:2, role:2, titre:"Note de la régulation du SAMU, 9 h 58",
+      texte:"« Activité soutenue sur votre secteur : une ambulance toutes les 20 minutes en moyenne. Le CHU voisin peut accueillir des patients graves, pour une durée limitée. Un renfort de régulation médicale à distance est possible sur demande. »"},
+  D4:{tour:3, role:3, titre:"Brouillon d'article de France 3 Occitanie, publication prévue à 13 h", media:null,
+      texte:"« Hôpital de Montclair : écrans bloqués, patients soignés au papier. Depuis ce matin, le dossier informatique des patients est inaccessible. Des soignants évoquent un “piratage”. Des données ont-elles été dérobées ? La direction [réponse attendue]. »"},
+  D5:{tour:3, role:2, titre:"Publication sur un réseau social, 11 h 47", media:null,
+      texte:"« [Photo d'un écran bloqué] On soigne au papier depuis 6 h du matin. Personne ne nous dit rien. #Montclair »\n400 partages à 12 h 05."},
+  D6:{tour:4, role:3, titre:"Note intersyndicale, dimanche 8 h 30",
+      texte:"« Préavis de grève déposé à compter de lundi 18 h si la paie de novembre ne part pas. Nous exigeons le rétablissement des plannings de garde et une réponse écrite de la direction aujourd'hui. »"},
+  D7:{tour:4, role:0, titre:"Courriel de la banque, dimanche 8 h 55",
+      texte:"« Au vu de la situation, nous pouvons verser un acompte de 60 % de la masse salariale de novembre, contre un engagement écrit et daté de régularisation. Réponse attendue lundi à 12 h. »"},
+  D8:{tour:5, role:3, titre:"Publication du groupe criminel, lundi 6 h 55", media:null,
+      texte:"« CH Montclair. Premier lot publié : plannings du personnel, comptes rendus médicaux. Dans 48 h : dossiers de psychiatrie. Prix : 3 000 000 €. »"},
+  D9:{tour:5, role:3, titre:"Courriel du DPO, lundi 7 h 10",
+      texte:"« Rappel : le chiffrement du dossier patient constitue déjà une violation de données personnelles. Notification à la CNIL au plus tard mardi 6 h 40 (article 33 du RGPD, le règlement général sur la protection des données) : nous pouvons notifier aujourd'hui et compléter ensuite. Si le risque pour les personnes est élevé, nous devons les informer dans les meilleurs délais (article 34 du RGPD). »"},
+  D10:{tour:6, role:2, titre:"Note de la DRH, mercredi 8 h",
+      texte:"« Deux cadres de santé de la cellule dépassent 60 heures cette semaine. Cinq agents supplémentaires sont en arrêt depuis lundi. Les services demandent le retour de leurs cadres pour organiser le week-end. »"}
+};
+
+/* ---------------- Événements imprévus (§4) ---------------- */
+const EVENTS = {
+  E1:{tour:2, texte:"Épidémie de gastro-entérite sur le secteur : +40 % d'arrivées aux urgences depuis 9 h.",
+      fx:[fx("soins",-1,"Plus d'arrivées aux urgences, avec les mêmes équipes."),
+          fx("secu",-1,"Plus d'arrivées, donc plus de prescriptions faites sans historique.",[{if:{t:2,b:"A"}, d:0}])],
+      mit:{if:{t:2,b:"A"}, txt:"Le délestage vers le CHU a amorti l'afflux de l'épidémie."}},
+  E2:{tour:3, texte:"Douze agents ont reçu un courriel « de l'ARS » leur demandant de ressaisir leurs identifiants sur un lien. Trois ont cliqué.",
+      fx:[fx("si",-1,"Des identifiants volés rouvrent une porte à l'attaquant.",[{if:{t:1,b:"E"}, d:0}])],
+      mit:{if:{t:1,b:"E"}, txt:"La consigne de samedi matin mettait en garde contre les messages inhabituels : les trois agents ont prévenu l'informatique, et les comptes ont été bloqués à temps."}},
+  E3:{tour:4, texte:"Le grossiste-répartiteur ne reçoit plus vos commandes électroniques de médicaments : la livraison de lundi est annulée.",
+      fx:[fx("secu",-1,"Certains traitements risquent la rupture.",[{if:{t:4,b:"B"}, d:0}])],
+      mit:{if:{t:4,b:"B"}, txt:"La pharmacie restaurée en priorité a pu repasser commande à temps."}},
+  E4:{tour:5, texte:"Un patient suivi en psychiatrie appelle la cellule en direct : il a trouvé son nom sur le site du groupe criminel.",
+      fx:[fx("confiance",-1,"Il apprend la fuite par l'attaquant avant d'avoir reçu votre message.",[{if:{t:5,b:"B",d:"a"}, d:0}]),
+          fx("secu",-1,"Un patient fragile, laissé seul face à cette découverte, est exposé.",[{if:{t:5,b:"B",d:"a"}, d:0}])],
+      mit:{if:{t:5,b:"B",d:"a"}, txt:"Le patient avait déjà été appelé ce matin par la cellule d'écoute : il est reçu en consultation dédiée."}},
+  E5:{tour:6, texte:"Le prestataire de restauration ne reçoit plus par voie informatique les commandes de repas des services (régimes, allergies). Les repas de jeudi seront préparés sans ces informations.",
+      fx:[fx("secu",-1,"Un repas inadapté peut provoquer un incident.",[{if:{t:6,b:["C","D"]}, d:0}]),
+          fx("equipes",-1,"Les services doivent tout ressaisir à la main.")],
+      mit:{if:{t:6,b:["C","D"]}, txt:"Les cadres présents dans la cellule relaient service par service les régimes et les allergies."}}
+};
+const EVENT_POOLS = {early:["E1","E2"], late:["E3","E4","E5"]};
+
+/* ---------------- Fins (§3.7) ---------------- */
+const ENDINGS = [
+  {k:"secu", t:"Un patient en danger", d:"Un événement indésirable grave est survenu pendant le mode dégradé : une erreur de traitement chez un patient sans historique. Il est déclaré à l'ARS."},
+  {k:"conformite", t:"Le dossier juridique", d:"Déclaration tardive, notification hors délai : l'ARS et la CNIL ouvrent une procédure."},
+  {k:"confiance", t:"La confiance perdue", d:"La presse, le personnel et l'ARS ne croient plus la direction. L'ARS place l'hôpital sous accompagnement renforcé."},
+  {k:"si", t:"La crise qui dure", d:"À J+7, une semaine après le début de la crise, le système n'est pas revenu, ou l'attaquant est revenu. La crise entre dans sa deuxième semaine."},
+  {k:"equipes", t:"Les équipes épuisées", d:"L'hôpital fonctionne, mais les arrêts maladie se multiplient : les équipes ne tiennent plus."},
+  {k:"soins", t:"L'hôpital à l'arrêt", d:"Les services tournent au ralenti : l'activité ne reprendra pas avant plusieurs semaines."}
+];
+const JUSTESSE = {t:"L'hôpital a tenu de justesse", d:"À J+7, une semaine après le début de la crise, le système revient et les obligations sont tenues, mais une partie de l'hôpital a payé le prix fort : {jauge} reste fragile."};
+const TENU = {t:"L'hôpital a tenu", d:"À J+7, une semaine après le début de la crise, le système revient, les obligations sont tenues, les équipes sont fatiguées mais debout. Ce n'est pas une victoire : c'est une crise bien conduite."};
+const END_POINTS = {tenu:3, justesse:2, echec:0};
+
+/* ---------------- Les six tours (§3) ---------------- */
+const TOURS = [
+/* ======================= TOUR 1 ======================= */
+{ id:1, kind:"doctrine", when:"Samedi, 6 h 40", t:"Contenir l'incident", budget:4,
+  sit:["Depuis 6 h 15, le dossier patient est inaccessible sur tous les postes. Les écrans affichent une demande d'argent dans une langue étrangère, avec un compte à rebours de 72 heures.",
+       "L'astreinte informatique a repéré une connexion inhabituelle à 3 h 12 par l'accès à distance d'Infogest, le prestataire de maintenance. Vous êtes réunis en cellule de crise. Deux questions se posent : que fait-on du réseau, et que dit-on au personnel ?"],
+  pressure:[], past:[],
+  cats:[{id:"confinement", n:"Confinement", excl:true, req:true}],
+  bricks:[
+    {id:"A", cat:"confinement", l:"Couper tout le réseau et Internet, sans éteindre les machines", c:3,
+     fx:[fx("si",2,"La propagation s'arrête et les sauvegardes sont mises hors de portée."),
+         fx("soins",-2,"Le laboratoire et l'imagerie s'arrêtent : les résultats partent par coursier."),
+         fx("equipes",-1,"Tout l'hôpital bascule au papier dès la première heure.")],
+     cq:"À 7 h 05, tout est coupé, la propagation s'arrête, et les résultats partent par coursier."},
+    {id:"B", cat:"confinement", l:"Isoler les serveurs touchés et couper le VPN d'Infogest", c:2,
+     fx:[fx("si",-1,"La mesure est ciblée, mais l'attaquant avait un second point d'appui : l'imagerie est chiffrée à 8 h 50."),
+         fx("soins",-1,"Seule l'imagerie est perdue ; le laboratoire continue.")],
+     cq:"Le VPN est coupé à 7 h 10 et le laboratoire tourne, mais à 8 h 50 l'imagerie est chiffrée à son tour."},
+    {id:"C", cat:"confinement", l:"Éteindre immédiatement serveurs et postes", c:1,
+     fx:[fx("si",1,"Le chiffrement s'arrête net."),
+         fx("soins",-2,"Tout s'arrête, laboratoire et imagerie compris."),
+         fx("equipes",-1,"Il faut réorganiser les services sans aucun écran.")],
+     cq:"À 7 h, tout est éteint, mais les traces qui montraient le chemin de l'attaquant sont perdues."},
+    {id:"D", cat:"confinement", l:"Ne rien couper : surveiller et documenter", c:0,
+     fx:[fx("si",-3,"L'attaquant reste dans le réseau et atteint les premières sauvegardes vers 9 h.")],
+     cq:"À 9 h, les premières sauvegardes sont chiffrées."},
+    {id:"E", cat:null, l:"Envoyer une consigne écrite au personnel dans l'heure", c:1,
+     fx:[fx("confiance",1,"Une consigne claire coupe court aux rumeurs internes."),
+         fx("equipes",1,"Chacun sait quoi faire : le mode dégradé tient mieux.")],
+     cq:"À 7 h 30, la consigne est affichée dans tous les services, et personne ne redémarre son poste."},
+    {id:"F", cat:null, l:"Verrouiller les comptes à privilèges (droits d'administration) et changer les mots de passe", c:2,
+     fx:[fx("si",1,"Les accès volés deviennent inutilisables."),
+         fx("equipes",-1,"Chaque service perd du temps à se reconnecter.")],
+     cq:"À 8 h, les comptes d'administration sont verrouillés, et les services perdent une demi-heure à se reconnecter."}
+  ],
+  combos:[{req:["B","F"], fx:[fx("si",1,"Changer les mots de passe ferme le second point d'appui de l'attaquant : après l'imagerie, plus rien n'est touché.")],
+           cq:"Les nouveaux mots de passe privent l'attaquant de son second point d'appui : l'imagerie, touchée à 8 h 50, sera la seule perte."}],
+  deferred:[],
+  cards:[
+    {savez:"L'astreinte vous a appelé à 6 h 30. Vous présidez la cellule. Le président du conseil de surveillance veut un point à 8 h.",
+     ondit:"Le directeur des soins : « Couper tout le réseau, c'est arrêter le laboratoire et l'imagerie pour la journée. »",
+     pos:"Ne pas arrêter tout l'hôpital sans avoir mesuré ce que cela coûte aux soins.", docs:[]},
+    {savez:"Connexion à 3 h 12 par le VPN d'Infogest, avec un compte de maintenance. Le chiffrement progresse serveur par serveur. Les sauvegardes et les serveurs du laboratoire sont sur le même réseau que les serveurs touchés.",
+     ondit:"Infogest assure que son accès est « parfaitement sécurisé » (voir le courriel lu par la Communication).",
+     pos:"Chaque minute compte : tant que l'attaquant est dans le réseau, il peut atteindre les sauvegardes.", docs:[]},
+    {savez:"Les urgences et les services passent au papier. Le laboratoire fonctionne encore.",
+     ondit:"Le biologiste : « Nos serveurs sont à part, ils ne risquent rien. »", faux:"Faux : la carte Informatique dit le contraire.",
+     pos:"Ce qui marche encore, le laboratoire surtout, doit tourner le plus longtemps possible.", docs:[]},
+    {savez:"Le standard reçoit des appels d'agents inquiets, et certains photographient les écrans. Vous recevez un courriel d'Infogest.",
+     ondit:"Un cadre propose de « ne rien dire au personnel tant qu'on n'en sait pas plus ».",
+     pos:"Le personnel doit recevoir une consigne dans l'heure : ne pas redémarrer, ne pas brancher de clé USB, se méfier de tout message inhabituel.", docs:["D1"]}
+  ],
+  hint:"Dans le doute sur la propagation, isoler coûte moins cher que restaurer. Mais isoler n'est pas éteindre : l'enquête aura besoin des machines allumées.",
+  avis:["CERT Santé","Isolez sans éteindre : éteindre arrête le chiffrement, mais efface les traces dont l'enquête a besoin. Dans le doute sur la propagation, isoler coûte moins cher que restaurer."],
+  expected:["A","E"],
+  debrief:{reflexes:["R1"], contra:"Soins (« serveurs à part ») contre Informatique (« laboratoire sur le même réseau »).", faux:["Le biologiste : « Nos serveurs sont à part. »"],
+           best:"Réponse attendue : A + E. B + F reste défendable, mais c'est un pari.", pieges:"C + E + F (bon marché, il finance tout mais efface les preuves) et D."}
+},
+/* ======================= TOUR 2 ======================= */
+{ id:2, kind:"arbitrage", when:"Samedi, 10 h", t:"Les urgences et le plan blanc", budget:4,
+  sit:["L'ARS doit savoir avant 11 h si vos urgences restent ouvertes, afin d'organiser avec le SAMU l'orientation des ambulances. Il n'y aura aucun retour du système avant 48 heures au mieux.",
+       "Ce samedi, une ambulance arrive en moyenne toutes les 20 minutes."],
+  pressure:[fx("equipes",-1,"Le week-end, à effectifs réduits, chaque heure au papier use les équipes présentes.")],
+  past:[{if:{t:1,b:["A","C"]}, txt:"Le laboratoire est arrêté : chaque résultat de biologie met 40 minutes à arriver, par coursier."},
+        {if:{t:1,b:"B"}, txt:"L'imagerie est tombée à 8 h 50 ; le laboratoire tient."},
+        {if:{t:1,b:"D"}, txt:"Le système est encore ouvert, et l'équipe informatique est débordée."}],
+  cats:[{id:"accueil", n:"Accueil des urgences", excl:true, req:true}],
+  bricks:[
+    {id:"A", cat:"accueil", l:"Délester : demander au SAMU d'orienter les ambulances vers le CHU", c:2,
+     fx:[fx("secu",2,"Les cas graves vont vers un site équipé.",[{if:{t:1,b:"B"}, d:1, why:"Les cas graves vont vers un site équipé ; le gain est moindre parce que votre laboratoire tient encore."}]),
+         fx("soins",-1,"Vos urgences ne prennent plus que les patients venus d'eux-mêmes."),
+         fx("confiance",-1,"La population voit ses urgences « fermées »."),
+         fx("equipes",1,"Moins d'afflux pour des équipes déjà au papier.")],
+     cq:"À 10 h 40, les ambulances partent vers le CHU, et le maire rappelle, inquiet."},
+    {id:"B", cat:"accueil", l:"Garder les urgences ouvertes au papier, en rappelant vingt agents en repos", c:2,
+     fx:[fx("soins",1,"L'hôpital reste ouvert."),
+         fx("secu",-2,"Sans historique ni résultats, chaque prescription est un risque.",[{if:{t:1,b:"B"}, d:-1, why:"Sans historique, chaque prescription est un risque ; le laboratoire qui tient limite ce risque."}]),
+         fx("equipes",-2,"Vingt agents sont privés de repos, avec une procédure papier jamais exercée.")],
+     cq:"Les urgences tiennent, mais chaque prescription sans historique est un risque assumé."},
+    {id:"C", cat:"accueil", l:"Déprogrammer la chirurgie et les consultations pour redéployer le personnel vers les urgences", c:2,
+     fx:[fx("soins",-1,"Les opérations de lundi et mardi sont reportées."),
+         fx("secu",-1,"Il y a plus de soignants aux urgences, mais toujours sans outils.",[{if:{t:1,b:"B"}, d:0, why:"Plus de soignants aux urgences, et un laboratoire qui tient : le risque est contenu."}]),
+         fx("confiance",-1,"Les patients déprogrammés sont mécontents.")],
+     cq:"Les blocs ferment, et les infirmières de bloc renforcent les urgences."},
+    {id:"D", cat:null, l:"Demander au SAMU un renfort de régulation médicale à distance", c:1,
+     fx:[fx("secu",1,"Un médecin régulateur compense en partie l'absence d'historique.")],
+     cq:"Un médecin régulateur du SAMU suit vos urgences par téléphone et valide les prescriptions à risque."},
+    {id:"E", cat:null, l:"Déclencher le plan blanc", c:1,
+     fx:[fx("equipes",1,"Le plan fixe qui fait quoi : les rappels sont organisés au lieu d'être improvisés."),
+         fx("conformite",1,"C'est la décision du directeur, et l'ARS en est informée.")],
+     cq:"Le plan blanc est déclenché : les agents rappelés savent où aller et pour combien de temps."},
+    {id:"F", cat:null, l:"Envoyer un point de situation écrit à l'ARS avant 11 h", c:1,
+     fx:[fx("confiance",1,"L'ARS voit un établissement qui pilote sa crise."),
+         fx("conformite",1,"L'ARS reçoit l'écrit qu'elle demandait et peut organiser le territoire.")],
+     cq:"À 10 h 50, l'ARS reçoit votre point écrit et l'intègre à l'organisation du territoire."}
+  ],
+  combos:[{req:["E","B"], fx:[fx("equipes",1,"Les rappels encadrés par le plan blanc épuisent moins.")], cq:"Grâce au plan blanc, les rappels sont planifiés et les relèves prévues."},
+          {req:["E","C"], fx:[fx("soins",1,"Une déprogrammation organisée par le plan blanc libère vraiment des lits et des soignants.")], cq:"Le plan blanc organise la déprogrammation : des lits et des soignants sont réellement libérés."}],
+  deferred:[],
+  cards:[
+    {savez:"Message vocal de l'ARS. Le CHU voisin peut absorber vos patients graves, mais pas au-delà de 48 h. Week-end : effectifs réduits. Le plan blanc couvre toute situation sanitaire exceptionnelle, et c'est vous qui le déclenchez.",
+     ondit:"« Le plan blanc, c'est pour les attentats. »", faux:"Faux : voir ce que vous savez et la slide sur le plan blanc.",
+     pos:"Prendre une décision qui tienne 48 heures.", docs:["D2"]},
+    {savez:"Pas de retour du système avant 48 h au mieux.",
+     ondit:"Sur un forum, un inconnu propose une « solution de secours en deux heures » à installer sur les postes.", faux:"Faux et dangereux.",
+     pos:"Ne pas faire reposer les urgences sur un système dont personne ne garantit rien.", docs:[]},
+    {savez:"Deux erreurs de prescription ont été évitées de justesse depuis 6 h. Note du SAMU.",
+     ondit:"L'interne de garde : « Le CHU prendra tout le monde. »", faux:"Faux : la carte Direction et la note du SAMU indiquent une capacité limitée dans le temps.",
+     pos:"La sécurité des patients déjà présents passe avant l'accueil de nouveaux patients.", docs:["D3"]},
+    {savez:"Le maire a appelé, inquiet de rumeurs sur les réseaux sociaux.",
+     ondit:"Un élu suggère d'annoncer que « tout fonctionne normalement ».",
+     pos:"Ne pas épuiser les équipes dès le premier jour. Ce que l'on dit au maire doit rester vrai demain.", docs:[]}
+  ],
+  hint:"Un mode dégradé tient d'autant mieux que la procédure papier a été exercée. Ce n'était pas le cas ici. Le plan blanc n'est pas une option parmi d'autres : c'est le cadre qui rend les autres options plus sûres.",
+  avis:["CHU voisin","Nous prenons vos patients graves, mais nous ne tiendrons pas au-delà de 48 heures."],
+  expected:null,
+  debrief:{reflexes:["R4"], contra:"Interne de garde (« le CHU prendra tout le monde ») contre carte Direction et note du SAMU (48 h).", faux:["« Le CHU prendra tout le monde. »","« Le plan blanc, c'est pour les attentats. »","La solution trouvée sur un forum."],
+           best:"Pas de meilleur choix unique : la stratégie d'accueil dépend de l'état du laboratoire. Ce qui ne dépend de rien : déclencher le plan blanc (E).", pieges:"Rester ouvert sans plan blanc : les équipes paient le prix."}
+},
+/* ======================= TOUR 3 ======================= */
+{ id:3, kind:"doctrine", when:"Samedi, 12 h 30", t:"Déclarer et parler", budget:3,
+  sit:["Une journaliste de France 3 Occitanie publie dans 30 minutes, avec ou sans votre réponse. Une photo d'écran bloqué circule sur les réseaux sociaux. Aucune déclaration d'incident n'a encore été faite sur le portail de signalement.",
+       "L'analyse informatique indique qu'un volume important de données a quitté le système cette nuit, sans qu'on sache encore lesquelles. Qui est derrière l'incident, quelle est son étendue exacte : vous l'ignorez encore.",
+       "La cellule ne dispose que de 3 créneaux à ce tour : vous avez 30 minutes avant la publication."],
+  pressure:[fx("confiance",-2,"La photo circule et l'article va sortir : la rumeur avance plus vite que l'établissement.")],
+  past:[{if:{t:2,b:"A"}, txt:"Vos ambulances sont orientées vers le CHU depuis 10 h 40 : la population le remarque."}],
+  cats:[{id:"declaration", n:"Déclaration", excl:true, req:true},
+        {id:"parole", n:"Parole publique", excl:true, req:true}],
+  bricks:[
+    {id:"A", cat:"declaration", l:"Déclarer l'incident grave de sécurité sur le portail national de signalement (l'ARS et le CERT Santé en sont destinataires)",
+     opts:[{d:"m", c:2, fx:[fx("conformite",2,"La loi impose de déclarer sans délai, même sans tout savoir."), fx("si",1,"Le CERT Santé appuie la cellule dès cet après-midi.")],
+            cq:"La déclaration part à 12 h 50, et le CERT Santé rappelle dans l'heure."},
+           {d:"s", c:1, fx:[fx("conformite",1,"La déclaration est faite le jour même, mais l'appui du CERT Santé n'arrive que dimanche.")],
+            cq:"La déclaration part à 19 h, et le CERT Santé prendra contact dimanche matin."}]},
+    {id:"F", cat:"declaration", l:"Attendre lundi pour déclarer, avec un diagnostic complet", c:0,
+     fx:[fx("conformite",-3,"Un incident grave ne se déclare pas « quand on saura tout »."), fx("si",-1,"La cellule passe le week-end sans appui extérieur.")],
+     cq:"Lundi, l'ARS constatera qu'aucune déclaration écrite n'a été faite."},
+    {id:"B", cat:null, l:"Porter plainte (police ou gendarmerie)",
+     opts:[{d:"a", c:1, fx:[fx("conformite",1,"Les enquêteurs saisis dès samedi peuvent préserver des preuves."), fx("confiance",1,"Le personnel voit que l'établissement agit.")],
+            cq:"À 15 h, un officier de police judiciaire recueille la plainte et demande que les journaux de connexion soient conservés."},
+           {d:"l", c:0, fx:[fx("conformite",1,"La plainte reste dans le délai de 72 heures exigé par l'assureur.")],
+            cq:"La plainte sera déposée lundi matin, dans le délai exigé par l'assureur."}]},
+    {id:"C", cat:"parole", l:"Publier un communiqué factuel : « Incident de sécurité en cours d'analyse. Les soins sont organisés. Nous ne savons pas encore si des données sont concernées ; nous vous informerons. »", c:1,
+     fx:[fx("confiance",2,"Donner sa version avant l'article permet de garder la main sur le récit, sans rien promettre de faux.")],
+     cq:"L'article reprend votre communiqué : « La direction indique qu'une analyse est en cours. »"},
+    {id:"D", cat:"parole", l:"Publier le communiqué préparé par le cabinet : « Aucune donnée patient n'est concernée »", c:1,
+     fx:[fx("confiance",3,"Un message rassurant apaise immédiatement.")],
+     cq:"L'article titre « Pas de fuite de données, selon la direction »."},
+    {id:"E", cat:"parole", l:"Ne pas répondre et donner une consigne de silence au personnel", c:0,
+     fx:[fx("confiance",-1,"L'article sort à 13 h sans votre version.",[{if:{t:2,b:"A"}, d:-2, why:"L'article sort sans votre version, et les ambulances détournées alimentent les rumeurs."}])],
+     cq:"L'article sort à 13 h avec la mention « La direction n'a pas souhaité s'exprimer »."}
+  ],
+  combos:[{req:["A","B","C"], fx:[fx("confiance",1,"Déclarer, porter plainte et parler d'une même voix crédibilise l'établissement.")],
+           cq:"La journaliste note que « l'établissement a saisi les autorités et la justice »."}],
+  deferred:[],
+  cards:[
+    {savez:"L'ARS attend une déclaration écrite. Le cabinet a préparé un communiqué : « Aucune donnée patient n'est concernée. »",
+     ondit:"Le président du conseil de surveillance : « Surtout, rassurez. »",
+     pos:"Ne rien dire publiquement qui vous engage avant d'en savoir plus.", docs:[]},
+    {savez:"Environ 40 gigaoctets de données sont sortis cette nuit. On ignore encore leur nature. Rien ne permet d'identifier l'auteur.",
+     ondit:"Sur un forum spécialisé : « Ce type de logiciel ne vole jamais de données. »", faux:"Faux et invérifiable : les 40 gigaoctets sortis le démentent.",
+     pos:"Déclarer maintenant : sans déclaration écrite, pas d'appui du CERT Santé.", docs:[]},
+    {savez:"Une patiente demande si son dossier « ira sur Internet ». Publication sur un réseau social.",
+     ondit:"Une cadre : « Dites-leur que tout est sous contrôle. »",
+     pos:"Rassurer sur la continuité des soins, sans nier ce que l'on ignore.", docs:["D5"]},
+    {savez:"Brouillon d'article. Déclarer et communiquer sont deux actes différents : déclarer est une obligation, auprès des autorités ; communiquer est un choix, auprès du public. L'assureur rappelle que l'indemnisation suppose une plainte déposée au plus tard 72 h après la découverte de l'atteinte.",
+     ondit:"",
+     pos:"Donner votre version avant que d'autres ne la donnent à votre place.", docs:["D4"]}
+  ],
+  hint:"La déclaration à l'ARS et au CERT Santé est une obligation ; le contenu du communiqué, lui, est un choix. Ne confondez pas les deux, et ne dites jamais publiquement ce que vous ne savez pas.",
+  avis:["ARS","La déclaration et le communiqué sont deux exercices différents : l'un est obligatoire, l'autre est un choix. Ne dites jamais publiquement ce que vous ne savez pas."],
+  expected:["A.m","B.l","C"],
+  debrief:{reflexes:["R2","R5"], contra:"Le brouillon de la Direction (« aucune donnée ») contre les données sorties signalées par l'Informatique.", faux:["« Ce type de logiciel ne vole jamais de données. »"],
+           best:"Réponse attendue : déclarer, porter plainte et publier un communiqué factuel. Deux versions tiennent dans le budget : déclarer maintenant et plainte lundi, ou déclarer ce soir et plainte aujourd'hui.", pieges:"D : même profil que la doctrine au moment du choix, payé au tour 5."}
+},
+/* ======================= TOUR 4 ======================= */
+{ id:4, kind:"arbitrage", when:"Dimanche, 9 h", t:"Quoi restaurer d'abord", budget:4,
+  sit:["Le CERT Santé et l'équipe informatique ont trouvé des sauvegardes intactes. Une seule restauration avance à la fois : paie et planning 30 h, laboratoire et pharmacie 36 h, dossier patient 60 h.",
+       "La paie doit partir lundi à 18 h."],
+  pressure:[fx("equipes",-1,"La paie et les plannings sont bloqués depuis samedi.")],
+  past:[{if:{t:1,b:"C"}, txt:"Faute de traces, chaque serveur doit être vérifié avant d'être restauré."},
+        {if:{t:1,b:"D"}, txt:"Une partie des sauvegardes est chiffrée."},
+        {if:{t:2,b:"A"}, txt:"Des patients sont au CHU : il faudra le dossier patient pour les reprendre."}],
+  cats:[{id:"restauration", n:"Restauration prioritaire", excl:true, req:true}],
+  bricks:(()=>{
+    const siR = fx("si",2,"Un système revient, vérifié.",[{if:{t:1,b:["C","D"]}, d:1, why:"Un système revient, mais la vérification ralentit tout : traces effacées ou sauvegardes touchées."}]);
+    return [
+    {id:"A", cat:"restauration", l:"Restaurer d'abord le dossier patient", c:2,
+     fx:[siR, fx("soins",2,"L'historique des patients revient."), fx("secu",1,"Les prescriptions redeviennent sûres."), fx("equipes",-1,"La paie et le planning attendent.")],
+     cq:"Mardi soir, le dossier patient revient."},
+    {id:"B", cat:"restauration", l:"Restaurer d'abord le laboratoire et la pharmacie", c:2,
+     fx:[siR, fx("secu",2,"Les résultats et le circuit du médicament reviennent : c'est là qu'une erreur coûte le plus vite."),
+         fx("soins",1,"Les services retrouvent leurs résultats.",[{if:{t:2,b:"A"}, d:0, why:"Sans dossier patient, impossible de reprendre les patients confiés au CHU."}]),
+         fx("equipes",-1,"La paie et le planning attendent.")],
+     cq:"Lundi soir, les résultats et le circuit du médicament sont de retour."},
+    {id:"C", cat:"restauration", l:"Restaurer d'abord la paie et le planning", c:2,
+     fx:[siR, fx("equipes",2,"Les salaires partent et les gardes s'organisent."), fx("secu",-1,"Les soignants tiennent une journée de plus sans dossier ni laboratoire.")],
+     cq:"Les salaires partent lundi."},
+    {id:"D", cat:null, l:"Faire venir l'équipe de l'éditeur du dossier patient sur site, en priorité", c:2,
+     fx:[fx("si",1,"La restauration est vérifiée et plus rapide."), fx("secu",1,"Moins d'erreurs de données à la reprise.")],
+     cq:"L'équipe de l'éditeur arrive à 14 h et vérifie chaque restauration."},
+    {id:"E", cat:null, l:"Accepter l'acompte bancaire et envoyer une lettre datée aux syndicats", c:1,
+     fx:[fx("equipes",1,"Une paie partielle et un engagement daté désamorcent le préavis."), fx("confiance",1,"Le personnel reçoit une réponse écrite, comme il le demandait.")],
+     cq:"Le préavis est suspendu, dans l'attente de la date promise."},
+    {id:"F", cat:null, l:"Diffuser un calendrier de restauration à tout l'hôpital", c:1,
+     fx:[fx("confiance",1,"Un calendrier lisible rassure les équipes."), fx("conformite",1,"L'ARS voit que la crise est pilotée.")],
+     cq:"À 12 h, le calendrier de restauration est affiché dans tous les services."}
+  ];})(),
+  combos:[],
+  deferred:[
+    {when:{all:[{not:{t:4,b:"C"}},{not:{t:4,b:"E"}}]}, apply:6, cancelledBy:{t:6,b:"E"},
+     fx:[fx("equipes",-1,"Faute de paie lundi, le préavis de dimanche a été suivi : une grève touche plusieurs services depuis lundi soir.")],
+     screen:"Faute de paie lundi, une grève touche plusieurs services depuis lundi soir : elle continuera sauf accord aujourd'hui.",
+     cancelTxt:"L'accord avec les syndicats met fin à la grève commencée lundi soir."},
+    {when:{all:[{t:4,b:"F"},{t:1,b:["C","D"]}]}, apply:6,
+     fx:[fx("confiance",-1,"Le calendrier annoncé dimanche n'est pas tenu : la vérification a pris plus longtemps.")],
+     screen:"Le calendrier de restauration annoncé dimanche n'est pas tenu."}
+  ],
+  cards:[
+    {savez:"La paie part lundi à 18 h, ou pas du tout cette semaine. La banque propose un acompte.",
+     ondit:"", pos:"Tenir le personnel : aucune crise ne se traverse sans lui.", docs:["D7"]},
+    {savez:"Une seule restauration avance à la fois : paie 30 h, laboratoire et pharmacie 36 h, dossier patient 60 h. Ce sont des logiciels distincts : chacun se restaure séparément. L'éditeur du dossier patient propose d'envoyer une équipe sur site, en priorité, à un coût élevé.",
+     ondit:"", pos:"Restaurer d'abord ce qui sera prêt le plus vite, sans sacrifier la vérification.", docs:[]},
+    {savez:"Deux résultats critiques sont arrivés en retard cette nuit.",
+     ondit:"Le chef de cardiologie : « Le dossier patient ramènera tout, biologie et pharmacie comprises. »", faux:"Faux : la carte Informatique précise que ce sont des logiciels distincts.",
+     pos:"Le dossier patient avant tout.", docs:[]},
+    {savez:"Note intersyndicale : préavis de grève si la paie ne part pas.",
+     ondit:"", pos:"Donner aujourd'hui une réponse claire au personnel, quelle qu'elle soit.", docs:["D6"]}
+  ],
+  hint:"Il n'y a pas de bon ordre universel. Il y a un ordre que vous savez justifier devant l'ARS et devant vos équipes.",
+  avis:["CERT Santé","Il n'y a pas de bon ordre universel. Il y a un ordre que vous savez justifier devant l'ARS et devant vos équipes."],
+  expected:null,
+  debrief:{reflexes:["R4"], contra:"Soins (« le dossier patient ramènera tout ») contre Informatique (« des logiciels distincts »).", faux:["« Le dossier patient ramènera tout. »"],
+           best:"Aucun ordre universel. Ce qui compte : un ordre justifié et une réponse au personnel (E ou F).", pieges:"Restaurer le dossier patient sans rien dire aux syndicats : la grève attend au tour 6."}
+},
+/* ======================= TOUR 5 ======================= */
+{ id:5, kind:"doctrine", when:"Lundi, 7 h", t:"La fuite de données et la rançon", budget:4,
+  sit:["Un groupe criminel revendique l'attaque et publie un premier lot : des plannings du personnel et une dizaine de comptes rendus médicaux. Il menace de publier des dossiers de psychiatrie sous 48 heures.",
+       "Le chiffrement du dossier patient, constaté samedi, était déjà une violation de données personnelles, parce qu'il rendait ces données indisponibles. Le délai de 72 heures pour notifier la CNIL court donc depuis samedi et expire mardi à 6 h 40.",
+       "Le conseil de surveillance demande d'« évaluer sérieusement » la rançon de 3 millions d'euros. L'assureur propose un « négociateur »."],
+  pressure:[fx("confiance",-1,"Des comptes rendus médicaux sont en ligne."), fx("secu",-1,"Des patients fragiles sont exposés.")],
+  past:[{if:{t:3,b:"D"}, txt:"Votre communiqué de samedi (« aucune donnée concernée ») est démenti par le lot publié."},
+        {if:{t:3,b:"F"}, txt:"L'ARS a reçu votre déclaration en retard."},
+        {if:{not:{t:3,b:"B"}}, txt:"L'assureur rappelle que la plainte devait être déposée sous 72 heures."}],
+  cats:[{id:"cnil", n:"Notification à la CNIL", excl:true, req:true},
+        {id:"patients", n:"Information des patients", excl:true, req:true},
+        {id:"contact", n:"Contact avec l'attaquant", excl:true, req:true}],
+  bricks:[
+    {id:"A", cat:"cnil", l:"Notifier la violation à la CNIL",
+     opts:[{d:"a", c:2, dl:"aujourd'hui (notification initiale, à compléter ensuite)", fx:[fx("conformite",2,"L'article 33 permet de notifier par étapes : notifier tôt met l'établissement à l'abri.")], cq:"La CNIL accuse réception lundi à 11 h."},
+           {d:"d", c:1, fx:[fx("conformite",1,"Le délai est tenu, mais sans aucune marge.")], cq:"Mardi à 5 h 30, la notification part, sans aucune marge."},
+           {d:"x", c:0, fx:[fx("conformite",-2,"Le délai de 72 heures est dépassé : il faudra justifier le retard.")], cq:"Jeudi, la notification part avec 48 heures de retard, accompagnée d'une lettre d'explication."}]},
+    {id:"B", cat:"patients", l:"Informer les patients concernés",
+     opts:[{d:"a", c:2, dl:"aujourd'hui, par téléphone pour la psychiatrie",
+            fx:[fx("confiance",1,"Un patient prévenu par l'hôpital garde confiance."), fx("secu",1,"Un patient prévenu peut être accompagné."), fx("equipes",-2,"La cellule d'écoute reçoit 300 appels.")],
+            cq:"300 appels, et deux patients reçus en consultation dédiée."},
+           {d:"x", c:0, dl:"après l'analyse, par courrier",
+            fx:[fx("confiance",-1,"Un patient découvre la fuite par la presse."), fx("secu",-1,"Un patient fragile reste seul face à la découverte, alors que l'article 34 impose d'informer dans les meilleurs délais quand le risque est élevé.")],
+            cq:"Jeudi, un patient découvre son compte rendu dans la presse."}]},
+    {id:"C", cat:"contact", l:"Accepter le négociateur de l'assureur, sans payer", c:1,
+     fx:[fx("si",1,"On obtient la liste précise des fichiers volés."), fx("confiance",-1,"Le contact se sait : l'hôpital paraît prêt à transiger."), fx("equipes",-1,"La négociation mobilise la cellule, et l'attaquant publie un second lot mardi pour faire pression.")],
+     cq:"La liste des fichiers est obtenue, mais un second lot est publié mardi."},
+    {id:"D", cat:"contact", l:"Refuser tout contact et transmettre au CERT Santé et aux enquêteurs", c:0,
+     fx:[fx("conformite",1,"C'est la doctrine constante des autorités."), fx("confiance",1,"L'enquête dispose de tous les éléments, et l'établissement tient une ligne claire.")],
+     cq:"Le CERT Santé et les enquêteurs reçoivent la revendication et le lot publié."},
+    {id:"E", cat:"contact", l:"Faire étudier le paiement de la rançon, comme le demande le conseil", c:1,
+     fx:[fx("conformite",-2,"C'est contraire à la doctrine, et le paiement par un établissement public pose de sérieuses difficultés."), fx("confiance",-1,"L'information fuite : « l'hôpital envisage de payer ».")],
+     cq:"« L'hôpital envisage de payer » fait la une mardi."},
+    {id:"F", cat:null, l:"Publier un communiqué de clarification", c:1,
+     fx:[fx("confiance",1,"Corriger le récit sans mentir permet de regagner du crédit.",[{if:{t:3,b:"D"}, d:2, why:"Reconnaître l'erreur du communiqué de samedi limite les dégâts du démenti."}])],
+     cq:"À 10 h, votre communiqué de clarification est repris par France 3.",
+     cqv:[{if:{t:3,b:"D"}, txt:"À 10 h, votre communiqué de clarification, qui reconnaît que celui de samedi était inexact, est repris par France 3."}]}
+  ],
+  combos:[{req:["A.a","B.a"], fx:[fx("conformite",1,"La notification à la CNIL et l'information des patients sont cohérentes (articles 33 et 34).")],
+           cq:"La CNIL relève que les personnes concernées ont été informées le jour même."}],
+  deferred:[
+    {when:{t:3,b:"D"}, apply:5, fx:[fx("confiance",-3,"Le lot publié prouve que votre communiqué de samedi était faux."), fx("conformite",-1,"L'ARS et la CNIL relèvent une communication inexacte.")]},
+    {when:{t:3,b:"F"}, apply:5, fx:[fx("conformite",-1,"La déclaration est arrivée en retard."), fx("confiance",-1,"L'ARS doute de la transparence de l'établissement.")]},
+    {when:{not:{t:3,b:"B"}}, apply:5, fx:[fx("conformite",-1,"Sans plainte dans les 72 heures, l'assureur ne couvrira pas les pertes.")]},
+    {when:{t:5,b:"B",d:"x"}, apply:6, fx:[fx("equipes",-2,"L'article de jeudi déclenchera les appels des patients exposés, sans cellule d'écoute préparée.")],
+     screen:"Un article sur la fuite paraîtra jeudi : les patients exposés, que vous n'avez pas prévenus, appelleront le standard, sans cellule d'écoute préparée."}
+  ],
+  cards:[
+    {savez:"La demande du conseil de surveillance et la proposition de l'assureur.",
+     ondit:"Sur un forum : « Ce groupe supprime les données quand on paie. » Le témoignage d'un autre directeur : « Nous avons payé, elles ont été publiées quand même. »", faux:"Faux pour le forum ; vrai pour le témoignage du directeur.",
+     pos:"Ne fermer aucune porte avant de comprendre ce que l'attaquant détient.", docs:[]},
+    {savez:"Le lot publié est authentique. L'analyse complète des données sorties prendra une semaine.",
+     ondit:"", pos:"Ne pas annoncer aux patients ce que l'on ne sait pas encore.", docs:[]},
+    {savez:"Des patients de psychiatrie fragiles. Deux ont déjà appelé.",
+     ondit:"", pos:"Prévenir ces patients avant qu'ils ne l'apprennent par la presse.", docs:[]},
+    {savez:"Publication du groupe criminel et courriel du DPO.",
+     ondit:"", pos:"Tenir le délai de la CNIL quoi qu'il arrive.", docs:["D8","D9"]}
+  ],
+  hint:"La rançon n'est pas la question de ce tour. La question est : que dites-vous aux patients, et quand ? Et le délai de la CNIL ne commence pas lundi.",
+  avis:["DPO et CERT Santé","Notifiez la CNIL sous 72 heures, quitte à compléter ensuite. Informez les personnes dans les meilleurs délais quand le risque est élevé. Ne payez jamais : payer ne garantit ni la récupération des données ni leur non-publication, et cela vous désigne comme une cible qui paie."],
+  expected:["A.a","B.a","D"],
+  debrief:{reflexes:["R3","R5"], contra:"Le forum (« ce groupe supprime les données quand on paie ») contre le témoignage d'un autre directeur.", faux:["« Ce groupe supprime les données quand on paie. »"],
+           best:"Réponse attendue : CNIL aujourd'hui + patients aujourd'hui + refus de tout contact.", pieges:"C (négociateur) et E (étudier le paiement). Le piège D du tour 3 se paie ici."}
+},
+/* ======================= TOUR 6 ======================= */
+{ id:6, kind:"arbitrage", when:"Mercredi", t:"Tenir la deuxième semaine", budget:4,
+  sit:["La cellule siège depuis quatre jours. Les restaurations se poursuivent dans l'ordre fixé dimanche, mais la vérification complète du système prendra encore une semaine, et un accès dormant de l'attaquant n'est pas exclu.",
+       "Les cadres sont épuisés. L'ARS demande un calendrier de sortie de crise pour vendredi."],
+  pressure:[fx("equipes",-1,"La cellule siège depuis quatre jours.")],
+  past:[{if:{t:2,b:"B"}, txt:"Deux soignants rappelés samedi sont en arrêt : garder la cellule complète pèsera davantage sur les équipes."},
+        {if:{t:2,b:"A"}, txt:"Le CHU est saturé et vous renvoie des patients."}],
+  cats:[{id:"organisation", n:"Organisation de la cellule", excl:true, req:true}],
+  bricks:[
+    {id:"A", cat:"organisation", l:"Organiser des relèves de 12 h, avec une main courante écrite et lue à chaque passation", c:2,
+     fx:[fx("equipes",2,"La cellule se repose enfin."),
+         fx("si",-1,"Une seconde équipe qui n'a pas vécu le samedi peut rouvrir un accès.",[{if:{t:1,b:"F"}, d:0, why:"Les comptes verrouillés samedi empêchent la seconde équipe de rouvrir un accès."}])],
+     cq:"Jeudi, la seconde équipe rouvre l'accès d'Infogest pour une maintenance « urgente ». Grâce à la main courante, il est refermé dans l'heure.",
+     cqv:[{if:{t:1,b:"F"}, txt:"Jeudi, Infogest redemande son accès : les comptes verrouillés samedi rendent la demande sans effet, et la main courante le signale à la seconde équipe."}]},
+    {id:"B", cat:"organisation", l:"Réduire la cellule à un noyau direction et informatique", c:1,
+     fx:[fx("equipes",1,"Les membres de la cellule retournent à leurs services."), fx("soins",1,"Les services retrouvent leurs cadres."),
+         fx("si",-2,"La vigilance baisse alors qu'un accès dormant est possible.",[{if:{t:1,b:"C"}, d:-3, why:"La vigilance baisse, et sans les traces effacées samedi, personne ne sait où chercher l'accès dormant."}])],
+     cq:"Les services respirent, mais plus aucun soignant ne siège à la table des décisions."},
+    {id:"C", cat:"organisation", l:"Maintenir la cellule complète, les quatre fonctions représentées, jusqu'à la fin de la vérification", c:2,
+     fx:[fx("si",1,"La vérification va au bout : deux postes encore infectés sont trouvés."), fx("confiance",1,"L'ARS voit une cellule qui tient."),
+         fx("soins",-1,"Les services sans cadres peinent à tenir leurs plannings."),
+         fx("equipes",-1,"Les membres de la cellule tiennent une semaine de plus.",[{if:{t:2,b:"B"}, d:-2, why:"Les membres de la cellule tiennent une semaine de plus, alors que deux soignants rappelés samedi sont déjà en arrêt."}])],
+     cq:"Deux postes infectés sont trouvés et nettoyés."},
+    {id:"D", cat:null, l:"Faire siéger les adjoints à la place des cadres de santé, avec une passation écrite", c:2,
+     fx:[fx("soins",1,"Les cadres retournent dans les services."), fx("equipes",1,"La cellule ne perd pas la mémoire de la crise.")],
+     cq:"Les adjoints siègent dès jeudi, et les cadres retrouvent leurs services avant le week-end."},
+    {id:"E", cat:null, l:"Conclure un accord avec les syndicats : paie régularisée, préavis levé", c:1,
+     fx:[fx("equipes",1,"Un accord daté apaise le front social."), fx("confiance",1,"Le personnel voit ses demandes prises en compte.")],
+     cq:"Jeudi, l'intersyndicale lève son préavis : le front social s'apaise.",
+     cqv:[{if:{all:[{not:{t:4,b:"C"}},{not:{t:4,b:"E"}}]}, txt:"Jeudi, l'accord met fin à la grève commencée lundi soir : le front social s'apaise."}]},
+    {id:"F", cat:null, l:"Publier le calendrier de sortie de crise demandé par l'ARS", c:1,
+     fx:[fx("confiance",1,"L'ARS et le personnel savent où l'on va."), fx("conformite",1,"L'ARS reçoit le calendrier qu'elle demandait.")],
+     cq:"Vendredi, l'ARS reçoit votre calendrier de sortie de crise."}
+  ],
+  combos:[],
+  deferred:[
+    {when:{t:2,b:"A"}, apply:6, fx:[fx("soins",-1,"Le CHU, saturé, vous renvoie des patients.")]}
+  ],
+  cards:[
+    {savez:"L'ARS attend un calendrier vendredi.", ondit:"", pos:"Montrer à l'ARS que la crise reste sous contrôle.", docs:[]},
+    {savez:"La vérification prend encore une semaine. Infogest redemande son accès, par un autre interlocuteur. Le CERT Santé signale que plusieurs établissements ont été réinfectés cette année après avoir levé leur cellule avant la fin de la vérification.",
+     ondit:"", pos:"Ne relâcher aucune vigilance avant la fin de la vérification.", docs:[]},
+    {savez:"Note de la DRH. Deux cadres de santé ont dépassé 60 heures.", ondit:"", pos:"Rendre leurs cadres aux services.", docs:["D10"]},
+    {savez:"La main courante, c'est-à-dire le journal écrit des décisions, doit être lisible par quelqu'un qui n'a pas vécu la crise.",
+     ondit:"Un confrère : « Chez nous, on a levé la cellule au bout de trois jours, sans problème. »", faux:"Faux précédent : son hôpital a été réinfecté, ce que confirme l'alerte du CERT Santé (carte Informatique).",
+     pos:"Une organisation lisible pour tout l'hôpital, annoncée aujourd'hui.", docs:[]}
+  ],
+  hint:"On ne sort pas d'une crise cyber quand le logiciel revient, mais quand on a vérifié que l'attaquant est parti.",
+  avis:["CERT Santé","On ne sort pas d'une crise cyber quand le logiciel revient, mais quand on a vérifié que l'attaquant est parti."],
+  expected:null,
+  debrief:{reflexes:["R6"], contra:"Le confrère (Communication et juridique) contre l'alerte du CERT Santé (Informatique).", faux:["« On a levé la cellule au bout de trois jours, sans problème. »"],
+           best:"Deux options solides : A + E + F (durer) et C + D (vérifier jusqu'au bout en rendant les cadres aux services). Le noyau réduit (B) est le seul vrai pari.", pieges:"B, surtout si les traces ont été effacées au tour 1."}
+}
+];
+
+/* Événements attachés aux tours (pour l'affichage) */
+TOURS.forEach(T => { T.events = Object.keys(EVENTS).filter(k => EVENTS[k].tour === T.id); });
+
+const REFLEXES = {
+  R1:"Isoler du réseau sans éteindre, et couper les accès suspects.",
+  R2:"Déclarer sans délai à l'ARS et au CERT Santé, et porter plainte.",
+  R3:"Notifier la CNIL dans les 72 heures si des données personnelles sont touchées.",
+  R4:"Distinguer continuité des soins, sécurité des patients et sécurité du système.",
+  R5:"Ne jamais payer ; ne jamais mentir publiquement.",
+  R6:"Organiser la cellule pour durer, et ne sortir de crise qu'une fois l'attaquant parti."
+};
+
+
+/* ============================================================
+   Moteur de calcul (déterministe, sans dépendance au DOM)
+   Ordre de calcul d'un tour (§9.2) : situation → décisions → bonus
+   → héritage → événement → écrêtage 0–10 une seule fois.
+   Choix d'un groupe : tableau par tour de sélections [{b:"A", d:"m"|null}, …]
+   ============================================================ */
+
+const clamp = v => Math.max(0, Math.min(10, v));
+const gName = k => GAUGES.find(x => x.k === k).n;
+const gShort = k => GAUGES.find(x => x.k === k).c;
+const fmt = d => (d > 0 ? "+" : d < 0 ? "−" : "±") + Math.abs(d);
+
+/* ---------- conditions ---------- */
+function picked(choices, t, b, d){
+  const sel = choices[t - 1]; if(!sel) return false;
+  const list = Array.isArray(b) ? b : [b];
+  return sel.some(s => list.includes(s.b) && (!d || s.d === d));
+}
+function cond(c, choices){
+  if(!c) return true;
+  if(Array.isArray(c)) return c.some(x => cond(x, choices));
+  if(c.not) return !cond(c.not, choices);
+  if(c.all) return c.all.every(x => cond(x, choices));
+  return picked(choices, c.t, c.b, c.d);
+}
+
+/* ---------- briques ---------- */
+function brick(T, id){ return T.bricks.find(b => b.id === id); }
+function options(B){ return B.opts ? B.opts : [{d:null, c:B.c, fx:B.fx, cq:B.cq, cqv:B.cqv}]; }
+function option(B, d){ const o = options(B); return o.find(x => x.d === (d || null)) || o[0]; }
+function delayLabel(o){ return o.dl || (o.d ? DELAYS[o.d] : ""); }
+function cost(T, sel){ return sel.reduce((s, x) => s + option(brick(T, x.b), x.d).c, 0); }
+
+/* Effet résolu : la première variante dont la condition est remplie remplace delta et phrase */
+function resolve(f, choices){
+  for(const v of (f.v || [])) if(cond(v.if, choices)) return {j:f.j, d:v.d, why:v.why || f.why};
+  return {j:f.j, d:f.d, why:f.why};
+}
+
+/* ---------- validation d'une sélection ---------- */
+function checkSelection(T, sel){
+  const errs = [];
+  for(const C of T.cats){
+    const n = sel.filter(s => brick(T, s.b).cat === C.id).length;
+    if(C.req && n === 0) errs.push(`Choisissez une action dans « ${C.n} ».`);
+    if(C.excl && n > 1) errs.push(`Une seule action possible dans « ${C.n} ».`);
+  }
+  const c = cost(T, sel);
+  if(c > T.budget) errs.push(`La cellule est trop sollicitée : ${c} créneaux pour ${T.budget} disponibles.`);
+  return errs;
+}
+
+/* ---------- tirage des événements ---------- */
+function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function drawEvents(seed){
+  if(seed === null || seed === undefined || seed === "none") return [];
+  const r = mulberry32(Number(seed) * 2654435761 >>> 0);
+  const e = EVENT_POOLS.early[Math.floor(r() * EVENT_POOLS.early.length)];
+  const l = EVENT_POOLS.late[Math.floor(r() * EVENT_POOLS.late.length)];
+  return [e, l];
+}
+
+/* ---------- un tour ---------- */
+function deferredFor(i, choices){
+  const out = [];
+  TOURS.forEach(T => (T.deferred || []).forEach(D => {
+    if(D.apply === i + 1 && cond(D.when, choices)) out.push(D);
+  }));
+  return out;
+}
+function comboActive(req, sel){
+  return req.every(r => { const [b, d] = r.split("."); return sel.some(s => s.b === b && (!d || s.d === d)); });
+}
+function catOrder(T, id){ const B = brick(T, id); const k = T.cats.findIndex(c => c.id === B.cat); return k < 0 ? 99 : k; }
+
+function applyTour(g, choices, i, events){
+  const T = TOURS[i], sel = choices[i] || [];
+  const items = []; const cons = [];
+  const add = (src, label, f) => { const r = resolve(f, choices); if(r.d !== 0) items.push({src, label, ...r}); else if(f.v) items.push({src, label, ...r, neutral:true}); };
+
+  // 1. situation
+  (T.pressure || []).forEach(f => add("situation", "Situation", f));
+  // 2. décisions (ordre : catégories exclusives, puis facultatives par ordre alphabétique)
+  const sorted = [...sel].sort((a, b) => catOrder(T, a.b) - catOrder(T, b.b) || a.b.localeCompare(b.b));
+  const decCons = [];
+  sorted.forEach(s => {
+    const B = brick(T, s.b), o = option(B, s.d);
+    const lab = s.b + (s.d ? " (" + delayLabel(o) + ")" : "");
+    o.fx.forEach(f => add("decision", lab, f));
+    let txt = o.cq; for(const v of (o.cqv || [])) if(cond(v.if, choices)){ txt = v.txt; break; }
+    decCons.push(txt);
+  });
+  // 3. bonus (deux au plus)
+  const bonusCons = [];
+  (T.combos || []).filter(C => comboActive(C.req, sel)).slice(0, 2).forEach(C => {
+    C.fx.forEach(f => add("bonus", "Bonus " + C.req.join(" + "), f)); bonusCons.push(C.cq);
+  });
+  // 4. héritage
+  const herCons = [];
+  deferredFor(i, choices).forEach(D => {
+    if(D.cancelledBy && cond(D.cancelledBy, choices)){ if(D.cancelTxt) herCons.push(D.cancelTxt); return; }
+    D.fx.forEach(f => { add("heritage", "Décision passée", f); herCons.push(resolve(f, choices).why); });
+  });
+  // 5. événement
+  const evCons = []; let event = null;
+  (events || []).forEach(id => { const E = EVENTS[id]; if(E.tour !== i + 1) return; event = id;
+    E.fx.forEach(f => add("evenement", "Imprévu", f));
+    if(E.mit && cond(E.mit.if, choices)) evCons.push(E.mit.txt);
+  });
+  // 6. écrêtage une seule fois
+  const before = {...g}, net = {};
+  GAUGES.forEach(x => { net[x.k] = items.filter(it => it.j === x.k && !it.neutral).reduce((s, it) => s + it.d, 0); });
+  GAUGES.forEach(x => { g[x.k] = clamp(g[x.k] + net[x.k]); });
+  const sums = {};
+  ["situation", "decision", "bonus", "heritage", "evenement"].forEach(src => {
+    sums[src] = {}; GAUGES.forEach(x => sums[src][x.k] = items.filter(it => it.src === src && it.j === x.k && !it.neutral).reduce((s, it) => s + it.d, 0));
+  });
+  cons.push(...herCons, ...decCons, ...bonusCons, ...evCons);
+  return {before, after:{...g}, net, items:items.filter(it => !it.neutral), neutral:items.filter(it => it.neutral), cons, sums, event};
+}
+
+function simulate(choices, events){
+  const g = {...START}; const steps = [];
+  for(let i = 0; i < choices.length; i++) steps.push(applyTour(g, choices, i, events));
+  return {g, steps};
+}
+
+/* ---------- fin de crise (§3.7) ---------- */
+function ending(g){
+  for(const E of ENDINGS) if(g[E.k] <= 2) return {...E, level:"echec", pts:END_POINTS.echec};
+  const low = GAUGES.filter(x => g[x.k] <= 4);
+  if(low.length){
+    const min = Math.min(...low.map(x => g[x.k]));
+    const names = low.filter(x => g[x.k] === min).map(x => x.n.toLowerCase());
+    const jauges = names.length > 1 ? names.slice(0, -1).join(", ") + " et " + names[names.length - 1] + " restent fragiles" : names[0] + " reste fragile";
+    return {t:JUSTESSE.t, d:JUSTESSE.d.replace("{jauge} reste fragile", jauges), level:"justesse", pts:END_POINTS.justesse, low:low.map(x => x.k)};
+  }
+  return {...TENU, level:"tenu", pts:END_POINTS.tenu};
+}
+
+/* ---------- code de trajectoire ---------- */
+function tourCode(sel){ return [...sel].sort((a, b) => a.b.localeCompare(b.b)).map(s => s.b + (s.d || "")).join("+"); }
+function trajectory(choices){ return choices.map((sel, i) => `${i + 1}:${tourCode(sel)}`).join(" | "); }
+function parseTrajectory(str){
+  const choices = [];
+  for(const part of str.split("|")){
+    const m = part.trim().match(/^([1-6])\s*:\s*([A-F][a-z]?(?:\s*\+\s*[A-F][a-z]?)*)$/);
+    if(!m) return null;
+    choices[Number(m[1]) - 1] = m[2].split("+").map(x => { x = x.trim(); return {b:x[0], d:x[1] || null}; });
+  }
+  if(choices.length !== TOURS.length) return null;
+  for(let i = 0; i < choices.length; i++) if(!choices[i]) return null;
+  return choices;
+}
+
+/* ---------- combinaisons valides d'un tour (pour la calibration et l'enseignant) ---------- */
+function allSelections(T){
+  const lists = T.bricks.map(B => [null, ...options(B).map(o => ({b:B.id, d:o.d}))]);
+  const out = [];
+  const rec = (k, acc) => {
+    if(k === lists.length){ if(!checkSelection(T, acc).length) out.push(acc); return; }
+    for(const x of lists[k]) rec(k + 1, x ? [...acc, x] : acc);
+  };
+  rec(0, []);
+  return out;
+}
+
+
+/* ============================================================
+   Interface – ordinateur du groupe, téléphones, écran animateur
+   ============================================================ */
+
+/* ---------------- état et stockage ---------------- */
+const KEY = "montclair-crise-v5";
+const SOFT_SEC = 12 * 60;
+const JUST_MIN = 100;
+const TEST = () => location.hash === "#test";
+const minSec = () => TEST() || (S && S.noMin) ? 0 : 5 * 60;
+function load(){ try{ const s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+let S = load();
+if(!S || !["home", "intro", "tour", "result", "end"].includes(S.screen) || (S.screen !== "home" && !Array.isArray(S.choices))) S = {screen:"home"};
+
+/* ---------------- utilitaires DOM ---------------- */
+const $ = (sel, root = document) => root.querySelector(sel);
+function h(tag, attrs = {}, ...kids){
+  const el = document.createElement(tag);
+  for(const [k, v] of Object.entries(attrs || {})){
+    if(k === "class") el.className = v;
+    else if(k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if(v === true) el.setAttribute(k, "");
+    else if(v !== false && v != null) el.setAttribute(k, v);
+  }
+  for(const k of kids.flat(Infinity)){ if(k == null || k === false) continue; el.append(k.nodeType ? k : document.createTextNode(String(k))); }
+  return el;
+}
+const app = $("#app");
+let ticker = null, lastView = null;
+const mmss = s => `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`;
+const events = () => S.events || [];
+const choices = () => S.choices || [];
+const needsJust = i => !TEST() && (i === 2 || i === 4);
+
+function render(){
+  const view = location.hash + "|" + (M.active ? "m" + M.role + "|" + M.tour : (S.screen || "home") + "|" + (S.tour || 0));
+  const keepY = view === lastView ? window.scrollY : 0;
+  lastView = view;
+  clearInterval(ticker);
+  app.innerHTML = "";
+  if(location.hash === "#animateur"){ renderAnim(); window.scrollTo(0, keepY); return; }
+  if(TEST()) app.append(h("p", {class:"notice"}, "Mode test : le délai minimum de 5 minutes et la longueur minimale des justifications sont désactivés. Ne donnez pas ce lien aux étudiants."));
+  if(M.active){ renderMember(); window.scrollTo(0, keepY); return; }
+  ({home:renderHome, intro:renderIntro, tour:renderTour, result:renderResult, end:renderEnd})[S.screen || "home"]();
+  window.scrollTo(0, keepY);
+}
+window.addEventListener("hashchange", render);
+
+function topBar(right){
+  return h("header", {class:"top"},
+    h("div", {class:"brand"}, "Cellule de crise – Centre hospitalier de Montclair",
+      h("small", {}, S.group ? `Groupe ${S.group}${S.gname ? " : " + S.gname : ""}` : "Exercice de crise cyber")),
+    right || "");
+}
+const crx = n => `${n} créneau${n > 1 ? "x" : ""}`;
+function readable(T, sel){ // décision lisible : « libellé (délai) »
+  return [...sel].sort((a, b) => a.b.localeCompare(b.b)).map(x => { const B = brick(T, x.b); return B.l + (x.d ? " — " + delayLabel(option(B, x.d)) : ""); });
+}
+const COST_HELP = "Votre cellule ne peut pas tout mener de front : chaque action mobilise des personnes et du temps. 0 créneau si l'action ne demande rien maintenant (attendre, se taire, refuser) ; 1 pour une action simple (un message, un appel, une note) ; 2 ou 3 pour une action lourde ou immédiate (couper tout le réseau, déclarer sur-le-champ, appeler 300 patients). Agir plus tard coûte souvent moins aujourd'hui, mais se paie ensuite.";
+const kindBadge = T => h("span", {class:"kind " + T.kind}, T.kind === "doctrine" ? "Tour « doctrine »" : "Tour « arbitrage »");
+const kindText = T => T.kind === "doctrine"
+  ? "Sur ce tour, les autorités attendent une réponse précise. À vous de la reconnaître sous la pression, et de choisir ce que vous sacrifiez pour la tenir."
+  : "Sur ce tour, il n'y a pas de bonne réponse unique : plusieurs choix tiennent, avec des conséquences différentes. Vous devrez arbitrer, et assumer ce que vous sacrifiez.";
+
+/* ---------------- flèches et jauges ---------------- */
+const arrow = d => d > 0 ? h("span", {class:"tr p", title:"en hausse", role:"img", "aria-label":"en hausse"}, "▲") : d < 0 ? h("span", {class:"tr m", title:"en baisse", role:"img", "aria-label":"en baisse"}, "▼") : h("span", {class:"tr z", title:"sans effet", role:"img", "aria-label":"sans effet"}, "–");
+function trendPanel(highlightLast){
+  const sim = simulate(choices(), events());
+  return h("aside", {class:"sheet gauges", "aria-label":"Évolution de l'hôpital"},
+    h("h2", {style:"margin-top:0"}, "Évolution de l'hôpital"),
+    h("p", {class:"meta"}, "Les flèches montrent le sens de chaque évolution, tour par tour. Les valeurs exactes seront révélées au bilan."),
+    GAUGES.map(x => h("div", {class:"gauge"},
+      h("div", {class:"name"}, h("span", {}, x.n)),
+      h("div", {class:"trend"},
+        sim.steps.length ? sim.steps.map((st, i) => h("span", {class:"tcell" + (highlightLast && i === sim.steps.length - 1 ? " last" : "")}, h("small", {}, "T" + (i + 1)), arrow(st.net[x.k] || 0)))
+                         : h("span", {class:"meta"}, "Pas encore de décision")),
+      h("div", {class:"def"}, x.d))));
+}
+function gaugePanel(g){
+  return h("aside", {class:"sheet gauges", "aria-label":"État de l'hôpital"},
+    h("h2", {style:"margin-top:0"}, "État de l'hôpital à J+7"),
+    GAUGES.map(x => { const v = g[x.k];
+      return h("div", {class:"gauge" + (v <= 4 ? " low" : "")},
+        h("div", {class:"name"}, h("span", {}, x.n), h("span", {class:"v"}, v, "/10")),
+        h("div", {class:"cells", "aria-hidden":"true"}, Array.from({length:10}, (_, i) => h("div", {class:"cell" + (i < v ? " on" : "")}))),
+        h("div", {class:"def"}, x.d)); }));
+}
+
+/* ---------------- cartes de rôle et documents ---------------- */
+function docBlock(id){
+  const D = DOCS[id];
+  return h("div", {class:"doc"},
+    h("div", {class:"doch"}, "Document à lire à voix haute : ", h("b", {}, D.titre)),
+    D.media ? (D.media.endsWith(".mp3") || D.media.endsWith(".m4a") ? h("audio", {controls:true, src:D.media}) : h("img", {src:D.media, alt:D.titre})) : "",
+    D.texte.split("\n").map(p => h("p", {}, p)));
+}
+function cardBlock(T, k, showFaux){
+  const C = T.cards[k];
+  return h("div", {},
+    h("p", {}, h("b", {}, "Ce que vous savez : "), C.savez),
+    C.ondit ? h("p", {}, h("b", {}, "Ce que l'on vous dit : "), C.ondit) : "",
+    showFaux && C.faux ? h("p", {class:"meta"}, "(Enseignant : " + C.faux + ")") : "",
+    (C.docs || []).map(docBlock),
+    h("p", {}, h("b", {}, "Votre position de départ : "), C.pos));
+}
+
+/* ---------------- mode membre (téléphone) ---------------- */
+const MKEY = KEY + "-membre";
+let M = (() => { try{ return JSON.parse(localStorage.getItem(MKEY)) || {}; }catch(e){ return {}; } })();
+function saveM(){ try{ localStorage.setItem(MKEY, JSON.stringify(M)); }catch(e){} }
+const CODE_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+function tourCodeFor(g, t){ // code de 4 lettres, fixe pour un groupe et un tour
+  let x = ((g * 7919 + (t + 1) * 104729 + 1301) * 2654435761) >>> 0, out = "";
+  for(let k = 0; k < 4; k++){ out += CODE_ALPHA[x % CODE_ALPHA.length]; x = Math.floor(x / CODE_ALPHA.length) ^ (x * 31 >>> 0); x >>>= 0; }
+  return out;
+}
+const MEMBER_ROLES = [
+  {id:"0", n:"Direction", cards:[0]},
+  {id:"1", n:"Informatique et sécurité", cards:[1]},
+  {id:"2", n:"Soins", cards:[2]},
+  {id:"3", n:"Communication et juridique", cards:[3]},
+  {id:"13", n:"Informatique et communication (groupe de 3)", cards:[1, 3]},
+  {id:"sec", n:"Secrétaire de crise (groupe de 5)", cards:[]}
+];
+function renderMember(){
+  const role = MEMBER_ROLES.find(r => r.id === M.role);
+  app.append(h("header", {class:"top"},
+    h("div", {class:"brand"}, "Cellule de crise – CH de Montclair", h("small", {}, `Groupe ${M.group}${role ? " : " + role.n : ""}`))));
+  if(!role){
+    app.append(h("div", {class:"sheet"},
+      h("h1", {}, "Quel est votre rôle ?"),
+      h("p", {}, "Choisissez le rôle que votre groupe vous a attribué. Vous ne verrez que les informations réservées à ce rôle."),
+      h("div", {class:"options"}, MEMBER_ROLES.map(r => h("button", {class:"opt", onclick:() => { M.role = r.id; M.tour = -1; saveM(); render(); }}, h("span", {}, h("span", {class:"lbl"}, r.n)))))));
+  } else {
+    const missions = role.id === "sec" ? [{r:"Secrétaire de crise", m:"Vous tenez le clavier de l'ordinateur du groupe : vous saisissez les choix et rédigez la justification sous la dictée du groupe, et vous gardez le temps. Votre téléphone ne vous sert pas : tout est sur l'ordinateur.", p:"Relire la décision du tour précédent avant chaque nouveau tour, et annoncer le temps à 5 et à 10 minutes."}]
+                   : role.cards.map(k => MISSIONS[k]);
+    const err = h("p", {class:"err", role:"alert"});
+    const inp = h("input", {type:"text", id:"mcode", autocomplete:"off", autocapitalize:"characters", spellcheck:"false"});
+    const open = () => {
+      const v = inp.value.trim().toUpperCase();
+      const t = [0, 1, 2, 3, 4, 5].find(k => tourCodeFor(M.group, k) === v);
+      if(t === undefined){ err.textContent = `Ce code ne correspond pas au groupe ${M.group}. Recopiez le code affiché sur l'ordinateur de votre groupe, et vérifiez le numéro de groupe saisi.`; return; }
+      M.tour = t; M.unlocked = [...new Set([...(M.unlocked || []), t])].sort(); saveM(); render();
+    };
+    inp.addEventListener("keydown", e => { if(e.key === "Enter") open(); });
+    const T = M.tour >= 0 ? TOURS[M.tour] : null;
+    app.append(
+      T ? h("div", {class:"sheet situation"},
+            h("p", {class:"when"}, `Tour ${M.tour + 1} – ${T.when}`), h("h1", {}, T.t),
+            role.cards.length ? role.cards.map(k => h("div", {class:"mission"}, h("h2", {style:"margin-top:4px"}, ROLES[k]), cardBlock(T, k, false)))
+              : h("p", {}, "Vous n'avez pas de carte. Tenez le clavier de l'ordinateur du groupe : relisez la décision précédente, tenez le temps et rédigez la justification."),
+            h("p", {class:"notice"}, "Lisez votre carte et vos documents à voix haute au groupe. Votre position de départ n'est pas une consigne : vous pouvez changer d'avis, à condition de le dire."))
+        : h("div", {class:"sheet"}, h("h1", {}, "Votre mission"), missions.map(m => h("div", {class:"mission"}, h("h2", {style:"margin-top:4px"}, m.r), h("p", {}, m.m), h("p", {class:"meta"}, h("b", {}, "À chaque tour : "), m.p)))),
+      h("div", {class:"sheet"},
+        h("h2", {style:"margin-top:0"}, T ? "Tour suivant" : "Ouvrir votre carte"),
+        h("p", {}, "Saisissez le code affiché sur l'ordinateur de votre groupe. Il change à chaque tour."),
+        h("label", {class:"field", for:"mcode"}, "Code du tour"), inp, err,
+        h("div", {class:"row", style:"margin-top:10px"}, h("button", {class:"btn", onclick:open}, "Ouvrir la carte"),
+          T ? h("button", {class:"btn ghost", onclick:() => { M.tour = -1; saveM(); render(); }}, "Revoir ma mission") : ""),
+        (M.unlocked || []).length > 0 ? h("div", {class:"row", style:"margin-top:10px"}, h("span", {class:"meta"}, "Relire une carte déjà ouverte : "),
+          M.unlocked.map(k => h("button", {class:"btn ghost small", "aria-pressed":String(k === M.tour), onclick:() => { M.tour = k; saveM(); render(); }}, `Tour ${k + 1}`))) : ""));
+  }
+  app.append(h("footer", {class:"noprint"}, h("span", {}, "Mode membre : seules vos informations s'affichent ici."),
+    h("button", {class:"btn ghost small", onclick:() => { if(confirm("Quitter le mode membre sur cet appareil ?")){ M = {}; saveM(); render(); } }}, "Changer de groupe ou de rôle")));
+}
+
+/* ---------------- accueil ---------------- */
+function renderHome(){
+  app.append(topBar());
+  const err = h("p", {class:"err", role:"alert"});
+  const num = h("input", {type:"number", min:"1", max:"20", id:"gnum", inputmode:"numeric"});
+  const nm = h("input", {type:"text", id:"gname", maxlength:"40", placeholder:"Facultatif"});
+  const seed = h("input", {type:"text", id:"seed", inputmode:"numeric", maxlength:"4", placeholder:"4 chiffres affichés par l'enseignant"});
+  let device = null, mode = "commun";
+  const modeBtns = h("div", {class:"row", role:"group", "aria-label":"Imprévus"});
+  const seedRow = h("div", {}, h("label", {class:"field", for:"seed"}, "Numéro de séance"), seed);
+  const paintModes = () => { modeBtns.innerHTML = ""; [["commun","Imprévus communs à la classe"],["groupe","Imprévus propres au groupe"],["sans","Sans imprévu"]].forEach(([k, l]) =>
+    modeBtns.append(h("button", {class:"btn small" + (mode === k ? "" : " ghost"), "aria-pressed":String(mode === k), onclick:() => { mode = k; paintModes(); seedRow.classList.toggle("hidden", mode !== "commun"); }}, l))); };
+  paintModes();
+  const getNum = () => { const n = parseInt(num.value, 10); if(!(n >= 1 && n <= 20)){ err.textContent = "Indiquez le numéro de votre groupe, entre 1 et 20."; return null; } return n; };
+  const pcPart = h("div", {class:"hidden"},
+    h("label", {class:"field", for:"gname"}, "Nom de votre groupe (facultatif)"), nm,
+    h("h2", {}, "Imprévus"), modeBtns, seedRow);
+  const go = h("button", {class:"btn hidden", onclick:() => {
+    const n = getNum(); if(n == null) return;
+    if(device === "phone"){ M = {active:true, group:n, role:null, tour:-1, unlocked:[]}; saveM(); render(); return; }
+    let sd;
+    if(mode === "commun"){ sd = seed.value.trim(); if(!/^[1-9]\d{3}$/.test(sd)){ err.textContent = "Saisissez le numéro de séance à 4 chiffres projeté par l'enseignant (il ne commence jamais par 0)."; return; } sd = Number(sd); }
+    else if(mode === "groupe") sd = Math.floor(Math.random() * 9000) + 1000;
+    else sd = "none";
+    S = {screen:"intro", group:n, gname:nm.value.trim(), names:["", "", "", ""], mode, seed:sd, events:drawEvents(sd),
+         choices:[], just:[], tour:0, jokCert:2, jokExp:2, hintsSeen:[], reflect:["", "", ""], size:4, sec:"", cards:"phones"};
+    save(); render();
+  }});
+  const numPart = h("div", {class:"hidden"}, h("label", {class:"field", for:"gnum"}, "Numéro de votre groupe"), num);
+  const choose = d => { device = d; err.textContent = "";
+    pcBtn.setAttribute("aria-pressed", String(d === "pc")); phBtn.setAttribute("aria-pressed", String(d === "phone"));
+    pcBtn.className = "btn" + (d === "pc" ? "" : " ghost"); phBtn.className = "btn" + (d === "phone" ? "" : " ghost");
+    numPart.classList.remove("hidden"); pcPart.classList.toggle("hidden", d !== "pc"); go.classList.remove("hidden");
+    go.textContent = d === "pc" ? "Ouvrir la cellule de crise" : "Rejoindre mon groupe"; num.focus(); };
+  const pcBtn = h("button", {class:"btn ghost", "aria-pressed":"false", onclick:() => choose("pc")}, "💻 L'ordinateur du groupe");
+  const phBtn = h("button", {class:"btn ghost", "aria-pressed":"false", onclick:() => choose("phone")}, "📱 Le téléphone d'un membre");
+  app.append(h("div", {class:"sheet situation"},
+    h("p", {class:"when"}, "Samedi, 6 h 40"),
+    h("h1", {}, "Votre hôpital est attaqué. Vous êtes la cellule de crise."),
+    h("p", {}, "Le centre hospitalier de Montclair compte 420 lits (médecine, chirurgie, obstétrique, soins de suite, psychiatrie), 2 200 agents et 15 000 passages aux urgences par an. Ce samedi matin, un rançongiciel bloque le dossier patient."),
+    h("p", {}, "Pendant six tours, de samedi matin à mercredi, vous prenez les décisions de la cellule de crise. Vous composez chaque décision à partir de plusieurs actions, avec un temps limité : il faudra toujours renoncer à quelque chose."),
+    h("p", {class:"meta"}, "Le scénario est fictif, mais construit à partir de plusieurs attaques réelles contre des hôpitaux français."),
+    h("h2", {}, "Sur quel appareil êtes-vous ?"),
+    h("div", {class:"row", role:"group", "aria-label":"Appareil"}, pcBtn, phBtn),
+    h("p", {class:"meta"}, "Un seul ordinateur par groupe ouvre la cellule de crise : il affiche la situation et enregistre les décisions. Chaque membre rejoint son groupe sur son téléphone pour lire sa carte de rôle."),
+    numPart, pcPart, err,
+    h("div", {class:"row", style:"margin-top:14px"}, go)));
+  app.append(footer());
+}
+
+/* ---------------- avant de commencer ---------------- */
+const COMBO = "Informatique, sécurité, communication et juridique";
+function renderIntro(){
+  app.append(topBar());
+  S.size = S.size || 4;
+  const sizeBtns = [3, 4, 5].map(n => h("button", {class:"btn small" + (S.size === n ? "" : " ghost"), "aria-pressed":String(S.size === n), onclick:() => { readNames(); S.size = n; save(); render(); }}, `${n} membres`));
+  const slots = S.size === 3 ? [{k:0, label:"Direction"}, {k:2, label:"Soins"}, {k:1, label:COMBO}]
+                             : [{k:0, label:"Direction"}, {k:1, label:"Informatique et sécurité"}, {k:2, label:"Soins"}, {k:3, label:"Communication et juridique"}];
+  const inputs = slots.map(sl => h("input", {type:"text", id:"r" + sl.k, value:S.names[sl.k] || "", maxlength:"60", placeholder:"Prénom(s)"}));
+  const secIn = h("input", {type:"text", id:"rsec", value:S.sec || "", maxlength:"60", placeholder:"Prénom(s)"});
+  function readNames(){
+    slots.forEach((sl, i) => { S.names[sl.k] = inputs[i].value.trim(); });
+    if(S.size === 3) S.names[3] = S.names[1];
+    S.sec = S.size === 5 ? secIn.value.trim() : "";
+  }
+  const missionBlock = (title, texts, pr, inp, forId) => h("div", {class:"mission"},
+    h("h3", {}, title), texts.map(t => h("p", {}, t)), h("p", {class:"meta"}, h("b", {}, "À chaque tour : "), pr),
+    h("label", {class:"field", for:forId}, "Qui tient ce rôle ?"), inp);
+  const blocks = slots.map((sl, i) => {
+    if(S.size === 3 && sl.k === 1) return missionBlock(COMBO, [MISSIONS[1].m, MISSIONS[3].m], "À chaque tour, vous lisez deux cartes : celle de l'informatique et celle de la communication. Quand elles se contredisent, dites-le au groupe.", inputs[i], "r1");
+    const m = MISSIONS[sl.k]; return missionBlock(m.r, [m.m], m.p, inputs[i], "r" + sl.k);
+  });
+  if(S.size === 5) blocks.push(missionBlock("Secrétaire de crise",
+    ["Vous tenez le clavier de l'ordinateur du groupe : vous saisissez les choix et rédigez la justification, sous la dictée du groupe, et vous gardez le temps."],
+    "Relire la décision du tour précédent avant d'ouvrir le nouveau tour, et annoncer le temps à 5 et à 10 minutes.", secIn, "rsec"));
+  app.append(h("div", {class:"sheet"},
+    h("h1", {}, "Avant de commencer"),
+    h("h2", {}, "Combien êtes-vous ?"), h("div", {class:"row"}, sizeBtns),
+    h("p", {class:"meta"}, S.size === 3 ? "À trois, un membre tient à la fois l'informatique et la communication. La Direction garde son rôle d'arbitre."
+                       : S.size === 5 ? "À cinq, le cinquième membre est secrétaire de crise : il tient la main courante et le temps." : "Un membre par rôle."),
+    h("h2", {}, "Répartissez les rôles"), h("p", {}, "Lisez chacun votre mission à voix haute avant le tour 1."), blocks));
+  app.append(h("div", {class:"sheet"},
+    h("h2", {style:"margin-top:0"}, "Comment se joue un tour"),
+    h("ol", {class:"steps"},
+      h("li", {}, h("b", {}, "Lisez la situation"), " à voix haute. Chaque rôle ouvre sa carte et lit ses documents, puis résume au groupe ce qui compte pour la décision."),
+      h("li", {}, h("b", {}, "Composez votre décision"), " à partir des actions proposées. Dans une catégorie marquée d'un cadenas 🔒, il faut choisir une action et une seule ; les autres actions sont facultatives. Certaines actions proposent plusieurs délais."),
+      h("li", {}, h("b", {}, "Tenez compte de la disponibilité de la cellule."), " La cellule dispose de 4 créneaux par tour (3 au tour 3, quand la presse n'attend pas). ", COST_HELP, " On ne peut jamais tout faire : il faut renoncer."),
+      h("li", {}, h("b", {}, "Justifiez"), " : sur quelle information, de quelle carte, repose la décision, et quelle jauge acceptez-vous de sacrifier ? Obligatoire aux tours 3 et 5, qui seront notés."),
+      h("li", {}, h("b", {}, "Validez."), " Vous découvrez ce qui se passe, dans quel sens chaque jauge évolue, et pourquoi.")),
+    h("h2", {}, "Votre rythme"),
+    h("p", {}, "Chaque groupe avance à son rythme. Vous ne pouvez pas valider avant 5 minutes de réflexion ; au-delà de 12 minutes, le chronomètre passe au rouge."),
+    h("h2", {}, "Ce que vous voyez de l'hôpital"),
+    h("p", {}, "Six jauges décrivent l'état de l'hôpital. Après chaque décision, vous voyez le sens de leur évolution et la raison. Les valeurs exactes et la fin de votre crise sont révélées au bilan, qui s'affiche automatiquement après le tour 6."),
+    h("div", {class:"scroll"}, h("table", {}, h("tr", {}, h("th", {}, "Jauge"), h("th", {}, "Ce qu'elle mesure")), GAUGES.map(x => h("tr", {}, h("td", {}, h("b", {}, x.n)), h("td", {}, x.d))))),
+    h("h2", {}, "Vos jokers"),
+    h("p", {}, "Deux fois dans la partie, « Appeler le CERT Santé » affiche un indice. Deux fois aussi, « Appeler l'expert » : levez la main, votre enseignant vient vous voir."),
+    h("h2", {}, "Où chacun lit-il ses cartes ?"),
+    h("div", {class:"row"},
+      h("button", {class:"btn small" + ((S.cards || "screen") === "screen" ? "" : " ghost"), "aria-pressed":String((S.cards || "screen") === "screen"), onclick:() => { readNames(); S.cards = "screen"; save(); render(); }}, "Sur cet ordinateur"),
+      h("button", {class:"btn small" + (S.cards === "phones" ? "" : " ghost"), "aria-pressed":String(S.cards === "phones"), onclick:() => { readNames(); S.cards = "phones"; save(); render(); }}, "Sur les téléphones des membres")),
+    h("p", {class:"meta"}, S.cards === "phones"
+      ? "Chaque membre ouvre l'application sur son téléphone, choisit « Rejoindre mon groupe », puis son rôle. À chaque tour, cet ordinateur affiche un code : chacun le saisit pour ouvrir sa carte."
+      : "Les quatre cartes s'ouvrent sur cet ordinateur, une par une. Chacun lit la sienne à voix haute."),
+    h("div", {class:"row", style:"margin-top:14px"},
+      h("button", {class:"btn", onclick:() => { readNames(); S.screen = "tour"; S.tour = 0; S.openedAt = Date.now(); S.pending = []; save(); render(); }}, "Commencer le tour 1"))));
+  app.append(footer());
+}
+
+/* ---------------- un tour ---------------- */
+function pastBlock(i){
+  const ch = choices();
+  const lines = [];
+  (TOURS[i].past || []).forEach(p => { if(cond(p.if, ch)) lines.push(p.txt); });
+  TOURS.forEach(T => (T.deferred || []).forEach(D => { if(D.apply === i + 1 && D.screen && cond(D.when, ch)) lines.push(D.screen); }));
+  return lines;
+}
+function renderTour(){
+  const i = S.tour, T = TOURS[i];
+  if(!S.openedAt) S.openedAt = Date.now();
+  if(!S.pending) S.pending = [];
+  const elapsed = h("span", {class:"chrono"});
+  app.append(topBar(h("div", {}, h("span", {class:"clock"}, T.when), " ", elapsed)));
+
+  const budgetEl = h("p", {class:"budget", "aria-live":"polite"});
+  const palette = h("div", {class:"palette"});
+  const err = h("p", {class:"err", role:"alert"});
+  const just = h("textarea", {id:"just", placeholder:"Notre décision repose sur… (carte du rôle…). Nous acceptons de sacrifier…"}, S.pendingJust || "");
+  const justCount = h("span", {class:"meta"});
+  const paintCount = () => { justCount.textContent = (i === 2 || i === 4) ? ` ${just.value.trim().length} / ${JUST_MIN} caractères minimum` : " Facultatif à ce tour."; };
+  just.addEventListener("input", () => { S.pendingJust = just.value; save(); paintCount(); tick(); });
+  paintCount();
+
+  const sel = () => S.pending;
+  const isSel = (b, d) => sel().some(s => s.b === b && (d === undefined || s.d === d));
+  let focusKey = null;
+  function toggle(B, d){
+    focusKey = B.id + (d || "");
+    const cur = sel().filter(s => s.b !== B.id);
+    const already = isSel(B.id, d);
+    let next = cur;
+    if(!already){
+      if(B.cat){ const C = T.cats.find(c => c.id === B.cat); if(C.excl) next = cur.filter(s => brick(T, s.b).cat !== B.cat); }
+      next = [...next, {b:B.id, d:d}];
+    }
+    S.pending = next; save(); paint(); tick();
+  }
+  function wouldCost(B, d){
+    let next = sel().filter(s => s.b !== B.id);
+    if(B.cat){ const C = T.cats.find(c => c.id === B.cat); if(C.excl) next = next.filter(s => brick(T, s.b).cat !== B.cat); }
+    return cost(T, [...next, {b:B.id, d:d}]);
+  }
+  function brickCard(B){
+    const opts = options(B);
+    const on = isSel(B.id);
+    const card = h("div", {class:"brick" + (on ? " on" : "")});
+    const head = h("div", {class:"bhead"}, h("span", {class:"bid"}, B.id), h("span", {class:"blbl"}, B.l));
+    card.append(head);
+    if(opts.length === 1){
+      const o = opts[0]; const over = !on && wouldCost(B, o.d) > T.budget;
+      const btn = h("button", {class:"bbtn", "data-k":B.id + (o.d || ""), "aria-pressed":String(on), disabled:over, title:over ? "La cellule est déjà trop mobilisée" : "", onclick:() => toggle(B, o.d)},
+        on ? "Retenue ✓" : over ? "Cellule déjà mobilisée" : "Retenir", h("span", {class:"cost"}, ` · ${crx(o.c)}`));
+      card.append(btn);
+    } else {
+      card.append(h("div", {class:"delays", role:"group", "aria-label":"Délai"}, opts.map(o => {
+        const onD = isSel(B.id, o.d); const over = !onD && wouldCost(B, o.d) > T.budget;
+        return h("button", {class:"bbtn small", "data-k":B.id + (o.d || ""), "aria-pressed":String(onD), disabled:over, title:over ? "La cellule est déjà trop mobilisée" : "", onclick:() => toggle(B, o.d)},
+          (onD ? "✓ " : "") + delayLabel(o), h("span", {class:"cost"}, ` · ${crx(o.c)}${over ? " (cellule mobilisée)" : ""}`));
+      })));
+    }
+    return card;
+  }
+  function paint(){
+    palette.innerHTML = "";
+    T.cats.forEach(C => palette.append(h("fieldset", {class:"cat"},
+      h("legend", {}, "🔒 ", C.n, h("span", {class:"meta"}, " : une action et une seule")),
+      h("div", {class:"bricks"}, T.bricks.filter(B => B.cat === C.id).map(brickCard)))));
+    const free = T.bricks.filter(B => !B.cat);
+    if(free.length) palette.append(h("fieldset", {class:"cat"}, h("legend", {}, "Actions facultatives"), h("div", {class:"bricks"}, free.map(brickCard))));
+    const c = cost(T, sel());
+    budgetEl.innerHTML = "";
+    budgetEl.append(h("b", {}, `Disponibilité de la cellule : ${c} ${c > 1 ? "créneaux mobilisés" : "créneau mobilisé"} sur ${T.budget}`),
+      h("span", {class:"meta"}, c < T.budget ? ` · encore ${crx(T.budget - c)} de libre${T.budget - c > 1 ? "s" : ""}` : " · toute la cellule est mobilisée"),
+    );
+    if(focusKey){ const el = palette.querySelector(`[data-k="${focusKey}"]`); if(el && !el.disabled) el.focus(); }
+  }
+  const costHelp = h("details", {class:"costhelp"}, h("summary", {class:"meta"}, "Pourquoi les actions ne mobilisent-elles pas toutes autant la cellule ?"), h("p", {class:"meta"}, COST_HELP));
+  paint();
+
+  const validate = h("button", {class:"btn", onclick:() => {
+    if(Math.floor((Date.now() - S.openedAt) / 1000) < minSec()){ err.textContent = "Prenez encore le temps d'en discuter : la validation s'ouvre après 5 minutes."; return; }
+    const e = checkSelection(T, sel()); if(e.length){ err.textContent = e.join(" "); return; }
+    if(needsJust(i) && just.value.trim().length < JUST_MIN){ err.textContent = `Ce tour est noté : justifiez votre décision en ${JUST_MIN} caractères au moins (${just.value.trim().length} pour l'instant). Citez l'information, sa carte, et la jauge que vous sacrifiez.`; return; }
+    if(!confirm("Valider cette décision ? Elle est définitive.\n\n• " + readable(T, sel()).join("\n• "))) return;
+    S.choices = [...choices(), sel()]; S.just[i] = just.value.trim(); S.pending = []; S.pendingJust = ""; S.screen = "result"; save(); render();
+  }}, "Valider la décision");
+  const blocking = h("p", {class:"meta", "aria-live":"polite"});
+  const tick = () => {
+    const s = Math.floor((Date.now() - S.openedAt) / 1000);
+    elapsed.textContent = `Tour ${i + 1} sur 6 : ${mmss(s)}`;
+    elapsed.classList.toggle("late", s >= SOFT_SEC);
+    const left = minSec() - s;
+    const why = checkSelection(T, sel()).join(" ") || (needsJust(i) && just.value.trim().length < JUST_MIN ? `Justification : ${just.value.trim().length} / ${JUST_MIN} caractères.` : "");
+    validate.disabled = left > 0 || !!why;
+    blocking.textContent = why ? "Pour valider : " + why : "";
+    validate.textContent = left > 0 ? `Validation possible dans ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}` : "Valider la décision";
+  };
+  tick(); ticker = setInterval(tick, 1000);
+
+  const roleCards = ROLES.map((r, k) => {
+    const secret = h("div", {class:"secret hidden", id:`carte${k}`}, cardBlock(T, k, false));
+    const b = h("button", {class:"role", "aria-expanded":"false", "aria-controls":`carte${k}`, onclick:() => { const open = b.getAttribute("aria-expanded") === "true"; b.setAttribute("aria-expanded", String(!open)); secret.classList.toggle("hidden", open); wrap.classList.toggle("open", !open); }},
+      h("b", {}, r + (S.names[k] ? ` (${S.names[k]})` : "")), h("span", {class:"hint"}, "Réservé à ce rôle : ouvrez, puis lisez à voix haute."));
+    const wrap = h("div", {class:"rolewrap"}, b, secret);
+    return wrap;
+  });
+  const hintBox = h("div", {class:"notice" + (S.hintsSeen.includes(i) ? "" : " hidden"), role:"status"}, h("b", {}, "CERT Santé : "), "« " + T.hint + " »");
+  const expBox = h("div", {class:"notice hidden", role:"status"}, "Levez la main : votre enseignant arrive.");
+  const plural = n => `${n} restant${n > 1 ? "s" : ""}`;
+  const certBtn = h("button", {class:"btn ghost small", disabled:S.jokCert <= 0 || S.hintsSeen.includes(i), onclick:() => {
+      if(S.jokCert <= 0) return; S.jokCert--; S.hintsSeen.push(i); save(); hintBox.classList.remove("hidden"); certBtn.disabled = true; certBtn.textContent = `Appeler le CERT Santé (${plural(S.jokCert)})`; }}, `Appeler le CERT Santé (${plural(S.jokCert)})`);
+  const expBtn = h("button", {class:"btn ghost small", disabled:S.jokExp <= 0, onclick:() => {
+      if(S.jokExp <= 0) return; S.jokExp--; save(); expBox.classList.remove("hidden"); expBtn.disabled = S.jokExp <= 0; expBtn.textContent = `Appeler l'expert (${plural(S.jokExp)})`; }}, `Appeler l'expert (${plural(S.jokExp)})`);
+
+  const past = choices().map((s, k) => h("li", {}, h("b", {}, `Tour ${k + 1} – ${TOURS[k].t} : `),
+    readable(TOURS[k], s).join(" ; "),
+    S.just[k] ? h("div", {class:"meta"}, "Justification : " + S.just[k]) : ""));
+  const pastLines = pastBlock(i);
+  const ev = events().find(id => EVENTS[id].tour === i + 1);
+  const docsAll = T.cards.flatMap(c => c.docs || []);
+  const main = h("div", {},
+    past.length ? h("details", {class:"sheet noprint"}, h("summary", {}, h("b", {}, "Vos décisions précédentes")), h("ul", {}, past)) : "",
+    h("div", {class:"sheet situation"},
+      h("p", {class:"when"}, `Tour ${i + 1} – ${T.when}`),
+      h("h1", {}, T.t),
+      T.sit.map(p => h("p", {}, p)),
+      pastLines.length ? h("div", {class:"variant"}, h("b", {}, "Ce que la cellule sait de ses décisions passées"), h("ul", {}, pastLines.map(l => h("li", {}, l)))) : "",
+      ev ? h("div", {class:"event", role:"alert"}, h("b", {}, "Imprévu : "), EVENTS[ev].texte) : ""),
+    h("div", {class:"sheet"},
+      h("h2", {style:"margin-top:0"}, "Ce que sait chaque rôle"),
+      S.size === 3 ? h("p", {class:"notice"}, `Dans votre groupe, ${S.names[1] || "la même personne"} lit les deux cartes Informatique et Communication.`) : "",
+      docsAll.length ? h("p", {class:"meta"}, `Documents à lire à voix haute ce tour : ${docsAll.length}, dans les cartes concernées.`) : "",
+      S.cards === "phones"
+        ? h("div", {}, h("p", {class:"notice"}, "Code du tour à saisir sur les téléphones : ", h("span", {class:"code"}, tourCodeFor(S.group, i))),
+            h("details", {}, h("summary", {class:"meta"}, "Un téléphone ne fonctionne pas ? Afficher les cartes ici"), h("div", {class:"roles", style:"margin-top:8px"}, roleCards)))
+        : h("div", {}, h("div", {class:"roles"}, roleCards),
+            h("p", {class:"meta"}, h("button", {class:"btn ghost small", onclick:() => { S.cards = "phones"; save(); render(); }}, "Lire les cartes sur les téléphones (afficher le code du tour)")))),
+    h("div", {class:"sheet"},
+      h("h2", {style:"margin-top:0"}, "Votre décision"),
+      budgetEl, costHelp, palette,
+      S.size === 5 ? h("p", {class:"meta"}, `Secrétaire de crise${S.sec ? " (" + S.sec + ")" : ""} : saisissez les choix et la justification sous la dictée du groupe, et annoncez le temps à 5 et à 10 minutes.`) : "",
+      h("label", {class:"field", for:"just"}, i === 2 || i === 4 ? "Justification (obligatoire à ce tour, qui est noté)" : "Justification (facultative à ce tour)"), just, justCount, err,
+      h("div", {class:"row", style:"justify-content:space-between;margin-top:12px"}, h("div", {class:"jokers noprint"}, certBtn, expBtn), validate), blocking,
+      hintBox, expBox));
+  app.append(h("div", {class:"grid"}, main, trendPanel(false)));
+  app.append(footer());
+}
+
+/* ---------------- résultat d'un tour ---------------- */
+function whyList(st){
+  const all = [...st.items, ...(st.neutral || [])];
+  return GAUGES.filter(x => all.some(it => it.j === x.k)).map(x => {
+    const its = all.filter(it => it.j === x.k);
+    const onlyNeutral = !st.items.some(it => it.j === x.k);
+    return h("li", {}, arrow(st.net[x.k]), " ", h("b", {}, x.n), st.net[x.k] === 0 ? h("span", {class:"meta"}, onlyNeutral ? " : sans effet, et voici pourquoi" : " : les effets se compensent") : "",
+      h("ul", {class:"why"}, its.map(it => h("li", {}, arrow(it.d), " ", it.src === "situation" ? "Situation : " : it.src === "heritage" ? "Décision passée : " : it.src === "evenement" ? "Imprévu : " : "", it.why))));
+  });
+}
+function renderResult(){
+  const i = choices().length - 1, T = TOURS[i];
+  const st = simulate(choices(), events()).steps[i];
+  app.append(topBar(h("span", {class:"clock"}, T.when)));
+  const still = GAUGES.filter(x => ![...st.items, ...(st.neutral || [])].some(it => it.j === x.k)).map(x => x.n);
+  const main = h("div", {},
+    h("div", {class:"sheet"},
+      h("p", {}, h("span", {class:"stamp fresh"}, `Tour ${i + 1} : décision validée`)),
+      h("h1", {}, T.t),
+      h("h2", {}, "Ce que vous avez décidé"),
+      h("ul", {}, readable(T, choices()[i]).map(t => h("li", {}, t))),
+      S.just[i] ? h("p", {class:"meta"}, "Votre justification : « " + S.just[i] + " »") : "",
+      h("h2", {}, "Ce qui se passe"), h("ul", {class:"cons"}, st.cons.map(c => h("li", {}, c))),
+      h("div", {class:"avis"}, h("b", {}, T.avis[0] + " : "), "« " + T.avis[1] + " »"),
+      h("h2", {}, "Dans quel sens l'hôpital évolue, et pourquoi"),
+      h("ul", {class:"effects", "aria-live":"polite"}, whyList(st), still.length ? h("li", {class:"meta"}, "Sans changement : " + still.join(", ") + ".") : ""),
+      h("p", {class:"meta"}, "Les valeurs exactes seront révélées au bilan."),
+      h("div", {class:"row", style:"margin-top:14px"},
+        h("button", {class:"btn", onclick:() => { if(i < 5){ S.screen = "tour"; S.tour = i + 1; S.openedAt = Date.now(); S.pending = []; } else { S.screen = "end"; } save(); render(); }},
+          i < 5 ? `Passer au tour ${i + 2}` : "Voir le bilan de votre crise"))));
+  app.append(h("div", {class:"grid"}, main, trendPanel(true)));
+  app.append(footer());
+}
+
+/* ---------------- bilan ---------------- */
+const REFLECT = [
+  "Quelle décision changeriez-vous, et pourquoi ?",
+  "Quelle information de vos cartes a le plus pesé ?",
+  "Quelle question aimeriez-vous poser à un autre groupe ?"
+];
+const seedLabel = () => S.forcedEv ? "E:" + (events().join("+") || "aucun") : S.seed === "none" ? "sans imprévu" : "S" + S.seed;
+function exportLine(){ return `G${S.group} · ${seedLabel()} · ${trajectory(choices())}`; }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[c])); }
+const srcName = {situation:"Situation", decision:"Décisions", bonus:"Décisions (bonus)", heritage:"Décisions passées", evenement:"Imprévu"};
+function sumBy(sim, srcs){ const o = {}; GAUGES.forEach(x => o[x.k] = sim.steps.reduce((s, st) => s + srcs.reduce((a, src) => a + st.sums[src][x.k], 0), 0)); return o; }
+function fmtSums(o){ const p = GAUGES.filter(x => o[x.k]).map(x => `${x.c} ${fmt(o[x.k])}`); return p.length ? p.join(", ") : "aucun effet"; }
+function ficheHTML(){
+  const sim = simulate(choices(), events()), e = ending(sim.g);
+  const rows = choices().map((sel, i) => { const st = sim.steps[i];
+    return `<tr><td>${i + 1}. ${esc(TOURS[i].t)} (${TOURS[i].kind})</td><td>${readable(TOURS[i], sel).map(esc).join("<br>")}</td><td>${esc(S.just[i] || "")}</td><td>${st.items.map(it => esc(`${gShort(it.j)} ${fmt(it.d)} : ${it.why}`)).join("<br>")}</td></tr>`; }).join("");
+  return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Trajectoire G${S.group}</title><style>body{font-family:system-ui,Arial,sans-serif;max-width:960px;margin:24px auto;padding:0 16px;color:#16233A}table{border-collapse:collapse;width:100%}td,th{border:1px solid #C9D3DF;padding:6px;vertical-align:top;font-size:14px}</style></head><body>
+<h1>Cellule de crise – CH de Montclair</h1><p>Groupe ${S.group}${S.gname ? " : " + esc(S.gname) : ""}. Imprévus : ${esc(seedLabel())}${events().length ? " (" + events().join(", ") + ")" : ""}.</p>
+<h2>Fin : ${esc(e.t)}</h2><p>${esc(e.d)}</p><p>Points de fin de crise : ${e.pts}</p><h2>Code de trajectoire</h2><p>${esc(exportLine())}</p>
+<h2>État final</h2><ul>${GAUGES.map(x => `<li>${x.n} : <b>${sim.g[x.k]}/10</b></li>`).join("")}</ul>
+<h2>Décisions</h2><table><tr><th>Tour</th><th>Choix</th><th>Justification</th><th>Effets</th></tr>${rows}</table>
+<h2>Restitution</h2>${REFLECT.map((q, k) => `<p><b>${esc(q)}</b><br>${esc(S.reflect[k] || "")}</p>`).join("")}</body></html>`;
+}
+async function downloadFiche(msg){
+  const html = ficheHTML(), name = `trajectoire-groupe-${S.group}.html`;
+  try{
+    const url = URL.createObjectURL(new Blob([html], {type:"text/html"}));
+    const a = h("a", {href:url, download:name}); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000); msg.textContent = "Fiche téléchargée.";
+  }catch(e){ msg.textContent = "Le téléchargement n'est pas disponible ici : recopiez votre code de trajectoire."; }
+}
+function renderEnd(){
+  const sim = simulate(choices(), events()), e = ending(sim.g);
+  app.append(topBar(h("span", {class:"clock"}, "Bilan à J+7")));
+  const msg = h("p", {class:"meta", role:"status"});
+  const four = [["situation"], ["decision", "bonus"], ["heritage"], ["evenement"]].map(srcs => [srcs.map(s => srcName[s])[0], sumBy(sim, srcs)]);
+  const areas = REFLECT.map((q, k) => { const a = h("textarea", {id:"q" + k}, S.reflect[k] || ""); a.addEventListener("input", () => { S.reflect[k] = a.value; save(); }); return a; });
+  const main = h("div", {},
+    h("div", {class:"sheet situation"},
+      h("p", {class:"when"}, "Bilan à J+7"),
+      h("h1", {}, e.t), h("p", {}, e.d),
+      h("p", {}, h("b", {}, "Points de fin de crise : "), e.pts, h("span", {class:"meta"}, " (3 si l'hôpital a tenu, 2 de justesse, 0 sinon)")),
+      h("p", {}, "Code à donner à l'enseignant : ", h("span", {class:"code small"}, exportLine())),
+      h("div", {class:"row noprint"},
+        h("button", {class:"btn", onclick:() => {
+          const txt = [exportLine(), "Jauges : " + GAUGES.map(x => `${x.c} ${sim.g[x.k]}`).join(", "), "Fin : " + e.t + " (" + e.pts + " points)",
+                       "Imprévus : " + fmtSums(sumBy(sim, ["evenement"])), ...(S.just || []).map((j, k) => j ? `Justification T${k + 1} : ${j.replace(/\s*\n+\s*/g, " ")}` : "")].filter(Boolean).join("\n");
+          try{ navigator.clipboard.writeText(txt).then(() => { msg.textContent = "Code et bilan copiés : collez-les dans le message à l'enseignant."; }, () => { msg.textContent = "Copie impossible : recopiez le code ci-dessus."; }); }
+          catch(err){ msg.textContent = "Copie impossible : recopiez le code ci-dessus."; } }}, "Copier le code et le bilan"),
+        h("button", {class:"btn ghost", onclick:() => downloadFiche(msg)}, "Télécharger la fiche trajectoire")),
+      msg),
+    h("div", {class:"sheet"},
+      h("h2", {style:"margin-top:0"}, "D'où viennent les évolutions"),
+      h("div", {class:"scroll"}, h("table", {}, four.map(([n, o]) => h("tr", {}, h("th", {}, n), h("td", {}, fmtSums(o)))))),
+      h("p", {class:"meta"}, "Totaux avant plafonnement : une jauge ne descend jamais sous 0 ni ne dépasse 10, c'est pourquoi les totaux ne s'additionnent pas toujours aux valeurs finales."),
+      events().length ? h("p", {class:"meta"}, "Imprévus de votre partie : " + events().map(id => EVENTS[id].texte).join(" / ")) : h("p", {class:"meta"}, "Partie jouée sans imprévu.")),
+    h("div", {class:"sheet"},
+      h("h2", {style:"margin-top:0"}, "Votre trajectoire, avec les valeurs"),
+      h("p", {class:"meta"}, "Ce tableau montre enfin le poids de chaque décision. Quelle décision a le plus pesé ?"),
+      h("p", {class:"meta"}, "Deux sortes de tours : sur les tours « doctrine », les autorités attendaient une réponse précise ; sur les tours « arbitrage », il n'y avait pas de bonne réponse unique. L'enseignant y revient au débrief."),
+      choices().map((sel, i) => { const st = sim.steps[i];
+        return h("details", {class:"tourbil", open:i === 2 || i === 4},
+          h("summary", {}, h("b", {}, `Tour ${i + 1} – ${TOURS[i].t}`), " ", kindBadge(TOURS[i])),
+          h("ul", {}, [...sel].sort((a, b) => a.b.localeCompare(b.b)).map(x => { const B = brick(TOURS[i], x.b); return h("li", {}, h("b", {}, x.b + " "), B.l + (x.d ? " — " + delayLabel(option(B, x.d)) : "")); })),
+          GAUGES.some(x => st.before[x.k] + st.net[x.k] !== st.after[x.k]) ? h("p", {class:"meta"}, "Plafonnement : " + GAUGES.filter(x => st.before[x.k] + st.net[x.k] !== st.after[x.k]).map(x => `${x.c} ${st.before[x.k]} ${fmt(st.net[x.k])} ramenée à ${st.after[x.k]}`).join(" ; ") + " (une jauge reste entre 0 et 10).") : "",
+          S.just[i] ? h("p", {class:"meta"}, "Justification : « " + S.just[i] + " »") : "",
+          h("ul", {class:"effects"}, st.items.map(it => h("li", {}, h("b", {}, `${gShort(it.j)} ${fmt(it.d)}`), " · ", h("span", {class:"meta"}, srcName[it.src] + (it.src === "decision" || it.src === "bonus" ? " " + it.label : "") + " : "), it.why))),
+          h("ul", {class:"cons"}, st.cons.map(c => h("li", {}, c)))); })),
+    h("div", {class:"sheet noprint"},
+      h("h2", {style:"margin-top:0"}, "Terminer la partie"),
+      h("p", {}, "Avant le débrief, répondez ensemble à ces trois questions : l'enseignant pourra désigner n'importe quel membre du groupe pour y répondre. Les réponses sont facultatives."),
+      REFLECT.map((q, k) => [h("label", {class:"field", for:"q" + k}, q), areas[k]]),
+      S.done ? h("p", {class:"notice", role:"status"}, h("b", {}, "Partie terminée. "), "Vos réponses sont enregistrées. Copiez le code en haut de cette page et donnez-le à l'enseignant : il s'en sert pour comparer les groupes au débrief. Vous pouvez encore modifier vos réponses.")
+             : h("div", {class:"row", style:"margin-top:12px"}, h("button", {class:"btn", onclick:() => { S.done = true; save(); render(); }}, "Enregistrer nos réponses et terminer"))));
+  app.append(h("div", {class:"grid"}, main, gaugePanel(sim.g)));
+  app.append(footer());
+}
+
+/* ---------------- pied de page et fonctions enseignant ---------------- */
+function canForce(next){ // un imprévu forcé ne peut ni effacer ni ajouter un imprévu sur un tour déjà joué
+  const done = (S.choices || []).length;
+  const played = events().filter(id => EVENTS[id].tour <= done);
+  return played.every(id => next.includes(id)) && next.every(id => played.includes(id) || EVENTS[id].tour > done);
+}
+function footer(){
+  const box = h("div", {class:"hidden prof"});
+  const inp = h("input", {type:"text", placeholder:"Code enseignant", autocomplete:"off", style:"max-width:200px"});
+  const actions = h("div", {class:"row hidden"},
+    h("button", {class:"btn ghost small", onclick:() => { if(confirm("Effacer cette partie ? Cette action est définitive.")){ try{ localStorage.removeItem(KEY); }catch(e){} S = {screen:"home"}; render(); } }}, "Réinitialiser la partie"),
+    S.choices && S.choices.length ? h("button", {class:"btn ghost small", onclick:() => { S.screen = "end"; save(); render(); }}, "Aller au bilan") : "",
+    h("label", {class:"meta"}, "Forcer l'imprévu : ",
+      h("select", {onchange:(e) => { const v = e.target.value; if(!v) return; S.events = v === "none" ? [] : v.split(","); S.forcedEv = true; save(); render(); }},
+        h("option", {value:""}, "—"), h("option", {value:"none", disabled:!canForce([])}, "aucun"),
+        EVENT_POOLS.early.flatMap(a => EVENT_POOLS.late.map(b => h("option", {value:a + "," + b, disabled:!canForce([a, b])}, a + " et " + b))))),
+    S.screen === "tour" ? h("button", {class:"btn ghost small", onclick:() => { S.noMin = !S.noMin; save(); render(); }}, S.noMin ? "Rétablir le délai de 5 minutes" : "Lever le délai de 5 minutes") : "",
+    h("p", {class:"meta"}, "On ne peut forcer qu'un imprévu dont le tour n'est pas encore joué ; le code exporté l'indique alors (E:…)."));
+  const okBtn = h("button", {class:"btn small", onclick:() => unlockF()}, "OK");
+  const unlockF = () => { if(inp.value.trim().toUpperCase() === "PROF"){ inp.classList.add("hidden"); okBtn.classList.add("hidden"); actions.classList.remove("hidden"); } else inp.value = ""; };
+  inp.addEventListener("keydown", e => { if(e.key === "Enter") unlockF(); });
+  box.append(inp, okBtn, actions);
+  return h("footer", {class:"noprint"},
+    h("span", {}, "Scénario fictif, construit pour un exercice de formation."),
+    S.screen && S.screen !== "home" ? h("div", {class:"row"},
+      h("button", {class:"btn ghost small", onclick:() => { const v = prompt(`Recommencer depuis le début ? Toute la partie du groupe ${S.group} sera effacée sur cet ordinateur.\nPour confirmer, tapez le numéro du groupe (${S.group}).`); if(v !== null && v.trim() === String(S.group)){ try{ localStorage.removeItem(KEY); }catch(e){} S = {screen:"home"}; render(); } }}, "Recommencer la partie"),
+      h("button", {class:"btn ghost small", onclick:() => box.classList.toggle("hidden")}, "Enseignant")) : "", box);
+}
+
+/* ============================================================
+   Écran animateur (#animateur)
+   ============================================================ */
+const A = (() => { try{ return JSON.parse(localStorage.getItem(KEY + "-anim")) || {}; }catch(e){ return {}; } })();
+function saveA(){ try{ localStorage.setItem(KEY + "-anim", JSON.stringify(A)); }catch(e){} }
+function renderAnim(){
+  A.dur = A.dur || 120 * 60; A.left = A.left ?? A.dur; A.run = A.run || false; A.codes = A.codes || "";
+  if(!A.seed){ A.seed = String(Math.floor(Math.random() * 9000) + 1000); saveA(); }
+  app.append(h("header", {class:"top"},
+    h("div", {class:"brand"}, "Écran animateur", h("small", {}, "Exercice de crise cyber – CH de Montclair")),
+    h("a", {href:"#", class:"meta", onclick:(e) => { e.preventDefault(); history.replaceState(null, "", location.pathname + location.search); render(); }}, "Revenir à l'écran des groupes")));
+  const seedEv = drawEvents(Number(A.seed));
+  app.append(h("section", {class:"sheet"},
+    h("h2", {style:"margin-top:0"}, "Numéro de séance, à projeter"),
+    h("div", {class:"big"}, A.seed),
+    h("p", {class:"meta", style:"text-align:center"}, "Chaque groupe le saisit à l'ouverture de la cellule : tous vivent les mêmes imprévus, sans les connaître d'avance."),
+    h("details", {}, h("summary", {class:"meta"}, "Voir les imprévus de cette séance (ne pas projeter)"),
+      h("ul", {}, seedEv.map(id => h("li", {}, h("b", {}, `${id}, tour ${EVENTS[id].tour} : `), EVENTS[id].texte)))),
+    h("div", {class:"row", style:"justify-content:center"}, h("button", {class:"btn ghost small", onclick:() => { A.seed = String(Math.floor(Math.random() * 9000) + 1000); saveA(); render(); }}, "Tirer un autre numéro"))));
+
+  const big = h("div", {class:"big"});
+  const paint = () => { const s = Math.max(0, A.left); big.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; big.classList.toggle("late", A.left <= 10 * 60); };
+  paint();
+  if(A.run){ A.endAt = A.endAt || (Date.now() + A.left * 1000); ticker = setInterval(() => { A.left = Math.max(0, Math.round((A.endAt - Date.now()) / 1000)); paint(); if(A.left <= 0){ A.run = false; clearInterval(ticker); } saveA(); }, 1000); }
+  const durIn = h("input", {type:"number", min:"10", max:"240", value:String(Math.round(A.dur / 60)), style:"width:90px"});
+  app.append(h("section", {class:"sheet"},
+    h("h2", {style:"margin-top:0"}, "Temps de jeu restant"), big,
+    h("div", {class:"row", style:"justify-content:center;margin:10px 0"},
+      h("button", {class:"btn", onclick:() => { if(A.run){ A.run = false; A.endAt = null; } else { A.run = true; A.endAt = Date.now() + A.left * 1000; } saveA(); render(); }}, A.run ? "Mettre en pause" : "Démarrer"),
+      h("button", {class:"btn ghost", onclick:() => { A.dur = Math.max(10, parseInt(durIn.value, 10) || 120) * 60; A.left = A.dur; A.run = false; A.endAt = null; saveA(); render(); }}, "Remettre à zéro"),
+      h("label", {class:"meta"}, " Durée (min) ", durIn)),
+    h("p", {class:"meta", style:"text-align:center"}, "Environ 20 minutes par tour, 5 minutes au minimum. Le bilan s'affiche automatiquement après le tour 6.")));
+
+  const ta = h("textarea", {placeholder:"Un code par ligne, tel que copié depuis le bilan des groupes"}, A.codes);
+  const out = h("div", {});
+  const compare = () => {
+    A.codes = ta.value; saveA(); out.innerHTML = "";
+    const rows = [], bad = [];
+    ta.value.split(/\n+/).map(s => s.trim()).filter(Boolean).forEach(s => {
+      const m = s.match(/^G\s*(\d+)\s*·\s*(S\d{4}|sans imprévu|E:aucun|E:E\d(?:\+E\d)?)\s*·\s*(.+)$/);
+      const ch = m ? parseTrajectory(m[3]) : null;
+      if(!m){ if(/^G\s*\d+\s*·/.test(s)) bad.push(s); return; }
+      if(!ch){ bad.push(s + " (trajectoire incomplète)"); return; }
+      const ev = m[2] === "sans imprévu" || m[2] === "E:aucun" ? [] : m[2].startsWith("E:") ? m[2].slice(2).split("+") : drawEvents(Number(m[2].slice(1)));
+      if(ev.some(id => !EVENTS[id])){ bad.push(s + " (imprévu inconnu)"); return; }
+      rows.push({grp:Number(m[1]), ch, ev, sim:simulate(ch, ev)});
+    });
+    if(bad.length) out.append(h("p", {class:"err"}, "Codes non reconnus : " + bad.join(" / ")));
+    if(!rows.length){ out.append(h("p", {class:"meta"}, "Collez les codes copiés depuis le bilan des groupes.")); return; }
+    rows.sort((a, b) => a.grp - b.grp);
+    out.append(h("h3", {}, "Trajectoires"), h("div", {class:"scroll"}, h("table", {},
+      h("tr", {}, h("th", {}, "Groupe"), TOURS.map((t, i) => h("th", {}, `T${i + 1}`)), GAUGES.map(x => h("th", {title:x.n}, x.c)), h("th", {}, "Imprévus"), h("th", {}, "Fin"), h("th", {}, "Points de fin")),
+      rows.map(r => { const e = ending(r.sim.g), evs = fmtSums(sumBy(r.sim, ["evenement"]));
+        return h("tr", {}, h("td", {}, h("b", {}, "G" + r.grp)), r.ch.map(s => h("td", {}, tourCode(s))), GAUGES.map(x => h("td", {style:r.sim.g[x.k] <= 4 ? "color:var(--alarm);font-weight:800" : ""}, r.sim.g[x.k])), h("td", {class:"meta"}, evs), h("td", {}, e.t), h("td", {}, e.pts)); }))));
+    out.append(h("h3", {}, "Répartition des choix, tour par tour"));
+    TOURS.forEach((t, i) => {
+      const cnt = new Map(); rows.forEach(r => { const c = tourCode(r.ch[i]); cnt.set(c, [...(cnt.get(c) || []), "G" + r.grp]); });
+      out.append(h("p", {}, h("b", {}, `Tour ${i + 1} (${t.kind}) : `), [...cnt].map(([c, g]) => `${c} → ${g.join(", ")}`).join(" ; ")));
+    });
+  };
+  app.append(h("section", {class:"sheet"},
+    h("h2", {style:"margin-top:0"}, "Comparer les trajectoires (slide S7)"),
+    ta, h("div", {class:"row", style:"margin:10px 0"}, h("button", {class:"btn", onclick:compare}, "Afficher la comparaison")), out));
+  if(A.codes) compare();
+
+  const ref = h("section", {class:"sheet" + (A.unlocked ? "" : " hidden")},
+    h("p", {class:"meta"}, "Mode test, pour essayer le jeu sans attente ni justification : ", h("a", {href:"#test"}, "ouvrir le mode test"), ". Ne le donnez pas aux étudiants."),
+    h("h2", {}, "Référence du scénario, pour le débriefing"),
+    h("p", {class:"meta"}, "Effets de base de chaque action. Entre parenthèses : les variantes selon les choix précédents."),
+    TOURS.map((T, i) => h("div", {},
+      h("h3", {}, `Tour ${i + 1} – ${T.when} : ${T.t} `, kindBadge(T)),
+      h("p", {}, h("b", {}, "Pour le débrief : "), T.debrief.best, " ", h("span", {class:"meta"}, "Pièges : " + T.debrief.pieges)),
+      T.pressure.length ? h("p", {class:"meta"}, "Effet de la situation : " + T.pressure.map(f => `${gShort(f.j)} ${fmt(f.d)}`).join(", ")) : "",
+      h("div", {class:"scroll"}, h("table", {},
+        h("tr", {}, h("th", {}, "Action"), h("th", {}, "Créneaux"), h("th", {}, "Effets")),
+        T.bricks.flatMap(B => options(B).map(o => h("tr", {},
+          h("td", {}, h("b", {}, B.id + (o.d || "") + " "), B.l, o.d ? " (" + delayLabel(o) + ")" : "", B.cat ? " 🔒" : ""),
+          h("td", {}, o.c),
+          h("td", {}, o.fx.map(f => h("div", {}, `${gShort(f.j)} ${fmt(f.d)}`, (f.v || []).map(v => ` (${fmt(v.d)} si ${JSON.stringify(v.if).replace(/[{}"]/g, "")})`), h("span", {class:"meta"}, " : " + f.why))))))))),
+      (T.combos || []).map(C => h("p", {class:"meta"}, "Bonus " + C.req.join(" + ") + " : " + C.fx.map(f => `${gShort(f.j)} ${fmt(f.d)}`).join(", "))),
+      h("details", {}, h("summary", {class:"meta"}, "Ce que les cartes doivent faire émerger"),
+        h("ul", {},
+          h("li", {}, h("b", {}, "Réflexes : "), T.debrief.reflexes.map(r => r + " – " + REFLEXES[r]).join(" ")),
+          h("li", {}, h("b", {}, "Contradiction entre cartes : "), T.debrief.contra),
+          h("li", {}, h("b", {}, "Fausses informations : "), T.debrief.faux.join(" ; ")),
+          T.cards.map((c, k) => c.faux ? h("li", {}, h("b", {}, ROLES[k] + " : "), c.faux) : ""))))));
+  const lockIn = h("input", {type:"password", placeholder:"Code enseignant", autocomplete:"off", style:"max-width:200px"});
+  const unlock = () => { if(lockIn.value.trim().toUpperCase() === "PROF"){ A.unlocked = true; saveA(); render(); } else lockIn.value = ""; };
+  lockIn.addEventListener("keydown", e => { if(e.key === "Enter") unlock(); });
+  const lock = h("section", {class:"sheet noprint" + (A.unlocked ? " hidden" : "")},
+    h("h2", {style:"margin-top:0"}, "Référence du scénario et mode test"),
+    h("p", {class:"meta"}, "Réservés à l'enseignant, pour ne pas montrer les réponses si cet écran est projeté."), h("div", {class:"row"}, lockIn, h("button", {class:"btn small", onclick:unlock}, "OK")));
+  app.append(lock, ref,
+    A.unlocked ? h("p", {class:"noprint"}, h("button", {class:"btn ghost small", onclick:() => { A.unlocked = false; saveA(); render(); }}, "Masquer la référence")) : "");
+}
+
+render();
+
+</script>
+</body>
+</html>
